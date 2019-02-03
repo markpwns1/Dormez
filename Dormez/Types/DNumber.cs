@@ -96,26 +96,7 @@ namespace Dormez.Types
         {
             return ((char)ToInt()).ToDChar();
         }
-
-        [Member("sqrt")]
-        public DNumber SquareRoot()
-        {
-            return Math.Sqrt(value).ToDNumber();
-        }
-
-        [Member("nthRoot")]
-        public DNumber NthRoot(DNumber number)
-        {
-            if (number.ToFloat() % 2 == 0)
-            {
-                // if even
-                return Math.Pow(value, 1 / number.ToFloat()).ToDNumber();
-            }
-            else
-            {
-                // if odd
-                return (-Math.Pow(-value, 1 / number.ToFloat())).ToDNumber();
-            }
-        }
+        
+        
     }
 }
