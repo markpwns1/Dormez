@@ -15,9 +15,7 @@ namespace DormezCompiler
         {
             string filename;
             string outputName = "program.exe";
-
             
-
             if (args.Length > 0)
             {
                 filename = args[0];

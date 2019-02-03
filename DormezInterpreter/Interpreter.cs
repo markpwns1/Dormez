@@ -15,8 +15,6 @@ namespace DormezInterpreter
     {
         static void Main(string[] args)
         {
-            Console.Title = "Dormez Interpreter";
-
             Assembly assem = Assembly.GetExecutingAssembly();
             bool hasEmbeddedFile = assem.GetManifestResourceNames().Contains("DormezInterpreter.program.dmz");
             List<Token> tokens;

@@ -7,12 +7,12 @@ using Dormez.Evaluation;
 
 namespace Dormez.Types
 {
-    public class DTemplate : DObject
+    public class DWeakTemplate : DObject
     {
         public Interpreter i;
         public InterpreterLocation definition;
 
-        public DTemplate super;
+        public DWeakTemplate super;
         
         // Instantiates without calling constructor
         public DTable ShallowInstantiate()

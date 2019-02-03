@@ -5,6 +5,7 @@ using System.Reflection;
 using Dormez.Evaluation;
 using Dormez.Functions;
 using Dormez.Memory;
+using Dormez.StrongFunctions;
 
 /*
 
@@ -18,22 +19,22 @@ namespace Dormez.Types
 {
     public class DObject
     {
-
-        public static Dictionary<Type, List<StrongFunction>> publicMethods = new Dictionary<Type, List<StrongFunction>>();
+        public static Dictionary<Type, List<StrongFunction>> strongFunctions = new Dictionary<Type, List<StrongFunction>>();
+        public static Dictionary<string, Type> strongTemplates = new Dictionary<string, Type>();
 
         public Dictionary<string, Variable> members = new Dictionary<string, Variable>();
-
+        
         public DObject()
         {
             Type type = GetType();
 
-            if (!publicMethods.ContainsKey(type))
+            if (!strongFunctions.ContainsKey(type))
             {
                 List<StrongFunction> methods = new List<StrongFunction>();
 
                 foreach (var method in type.GetMethods())
                 {
-                    var memberAttrib = method.GetCustomAttribute<Member>();
+                    var memberAttrib = method.GetCustomAttribute<MemberAttribute>();
 
                     if (memberAttrib == null)
                     {
@@ -51,7 +52,7 @@ namespace Dormez.Types
 
                 foreach(var property in type.GetProperties())
                 {
-                    var memberAttrib = property.GetCustomAttribute<Member>();
+                    var memberAttrib = property.GetCustomAttribute<MemberAttribute>();
 
                     if(memberAttrib == null)
                     {
@@ -83,7 +84,7 @@ namespace Dormez.Types
                     }
                 }
 
-                publicMethods.Add(type, methods);
+                strongFunctions.Add(type, methods);
             }
 
             

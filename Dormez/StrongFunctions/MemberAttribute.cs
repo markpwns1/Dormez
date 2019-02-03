@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace Dormez.Functions
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class Member : Attribute
+    public class MemberAttribute : Attribute
     {
         public string callableName;
 
-        public Member(string name)
+        public MemberAttribute(string name)
         {
             callableName = name;
         }

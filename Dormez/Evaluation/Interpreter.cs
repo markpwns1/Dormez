@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Dormez.Memory;
+using Dormez.StrongFunctions;
 using Dormez.Types;
 
 namespace Dormez.Evaluation
@@ -45,12 +46,8 @@ namespace Dormez.Evaluation
                 .Where(type => type.Namespace == nameSpace);
         }
 
-        public Interpreter(List<Token> tokens)
+        public void LoadAssemblies()
         {
-            //current = this;
-            this.tokens = tokens;
-            this.heap = new Heap(this);
-
             var classes = GetClasses("Dormez.Types").ToList();
 
             if (Directory.Exists("lib"))
@@ -64,12 +61,26 @@ namespace Dormez.Evaluation
 
             foreach (var c in classes)
             {
-                var staticAttrib = c.GetCustomAttribute<Static>();
-                if(staticAttrib != null)
+                var staticAttrib = c.GetCustomAttribute<StaticAttribute>();
+                var publicAttrib = c.GetCustomAttribute<StrongTemplateAttribute>();
+
+                if (staticAttrib != null)
                 {
                     heap.DeclareGlobalVariable(staticAttrib.name, (DObject)Activator.CreateInstance(c));
                 }
+                else if(publicAttrib != null)
+                {
+                    heap.DeclareGlobalVariable(publicAttrib.name, new DStrongTemplate(c));
+                }
             }
+        }
+
+        public Interpreter(List<Token> tokens)
+        {
+            this.tokens = tokens;
+            this.heap = new Heap(this);
+
+            LoadAssemblies();
         }
 
         public Token NextToken
@@ -216,6 +227,7 @@ namespace Dormez.Evaluation
         
         public void Execute()
         {
+            current = this;
             while(CurrentToken != "eof")
             {
                 evaluator.Evaluate();

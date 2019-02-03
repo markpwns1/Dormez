@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace Dormez.Memory
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class Static : Attribute
+    public class StaticAttribute : Attribute
     {
         public string name;
 
-        public Static(string n)
+        public StaticAttribute(string n)
         {
             name = n;
         }

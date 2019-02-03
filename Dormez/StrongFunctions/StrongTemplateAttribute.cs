@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace Dormez.StrongFunctions
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class Extension : Attribute
+    public class StrongTemplateAttribute : Attribute
     {
-        public string callableName;
+        public string name;
 
-        public Extension(string name)
+        public StrongTemplateAttribute(string name)
         {
-            callableName = name;
+            this.name = name;
         }
     }
 }

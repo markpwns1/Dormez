@@ -82,15 +82,15 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    DTemplate super = null;
+                    DWeakTemplate super = null;
 
                     if(i.CurrentToken == "extending")
                     {
                         i.Eat();
-                        super = Evaluate<DTemplate>();
+                        super = Evaluate<DWeakTemplate>();
                     }
 
-                    var structure = new DTemplate()
+                    var structure = new DWeakTemplate()
                     {
                         i = i,
                         definition = i.GetLocation(),
@@ -521,9 +521,9 @@ namespace Dormez.Evaluation
                         }
                     }
 
-                    if(DObject.publicMethods.ContainsKey(type))
+                    if(DObject.strongFunctions.ContainsKey(type))
                     {
-                        var methods = DObject.publicMethods[type];
+                        var methods = DObject.strongFunctions[type];
                         var method = methods.Find(x => x.callableName == name);
 
                         if(method != null)
@@ -546,9 +546,13 @@ namespace Dormez.Evaluation
                     {
                         return DObject.AssertType<DWeakFunction>(left).Call(p);
                     }
-                    else if(left.GetType() == typeof(DTemplate))
+                    else if(left.GetType() == typeof(DWeakTemplate))
                     {
-                        return DObject.AssertType<DTemplate>(left).Instantiate(p);
+                        return DObject.AssertType<DWeakTemplate>(left).Instantiate(p);
+                    }
+                    else if(left.GetType() == typeof(DStrongTemplate))
+                    {
+                        return DObject.AssertType<DStrongTemplate>(left).Instantiate(p);
                     }
                     else
                     {
