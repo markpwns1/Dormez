@@ -376,3 +376,32 @@ Anything syntactically correct is a statement. Take the following perfectly lega
     console.print("Nice to meet you, " + input);
     
 What does `7 + 8` do? Internally, it adds the numbers 7 and 8, but for all intents and purposes, it does nothing. Again, anything is a statement, as long as it is syntactically correct. There is a reason for this behaviour, but it's too long to explain here.
+
+### Different scoping rules
+
+Scoping in Dormez is quite different than in most languages. The important part is that a function **is not** outside the scope that called it. Refer to the following example:
+
+    
+    declare foo = function {
+        return x + y;
+    }
+    
+    declare bar = function {
+        declare x = 5;
+        declare y = 10;
+        console.print(foo());
+    }
+    
+    bar();
+    
+This will print 15. This is because `x` and `y` are still in scope. But why are they still in scope? That's because in Dormez, all functions are basically treated as though they were just code appended where they are called. The code above can pretty much be considered to be the code below:
+
+    declare bar = function {
+        declare x = 5;
+        declare y = 10;
+        console.print(function { return x + y; }());
+    }
+    
+    bar();
+    
+Of course, that's not actually how the Dormez interpreter handles functions internally, so rest assured that calling a function is efficient and comes with minimal overhead.
