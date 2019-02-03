@@ -56,7 +56,7 @@ namespace DormezInterpreter
             var interpreter = new Interpreter(tokens);
             var evaluator = new Evaluator(interpreter);
 
-            try
+            //try
             {
                 var argList = args.ToList();
 
@@ -68,10 +68,10 @@ namespace DormezInterpreter
 
                 interpreter.Execute();
             }
-            catch (Exception e)
+            //catch (Exception e)
             {
-                Console.WriteLine("Fatal error: " + e.Message);
-                Console.ReadKey();
+                //Console.WriteLine("Fatal error: " + e.Message);
+                //Console.ReadKey();
             }
         }
     }

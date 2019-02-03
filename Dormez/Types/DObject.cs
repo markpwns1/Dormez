@@ -90,6 +90,11 @@ namespace Dormez.Types
             
         }
 
+        public bool MemberExists(string name)
+        {
+            return members.ContainsKey(name);
+        }
+
         protected Exception OpException(Type leftSide)
         {
             var st = new StackTrace();

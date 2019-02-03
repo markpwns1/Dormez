@@ -81,12 +81,19 @@ namespace Dormez.Memory
         {
             foreach (var name in variables.Keys)
             {
+                var toDelete = new List<Variable>();
+
                 foreach (var variable in variables[name])
                 {
                     if (variable.depth > interpreter.depth)
                     {
-                        variables[name].Remove(variable);
+                        toDelete.Add(variable);
                     }
+                }
+
+                foreach (var item in toDelete)
+                {
+                    variables[name].Remove(item);
                 }
             }
         }

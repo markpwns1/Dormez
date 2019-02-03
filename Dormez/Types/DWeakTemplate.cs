@@ -12,7 +12,8 @@ namespace Dormez.Types
         public Interpreter i;
         public InterpreterLocation definition;
 
-        public DWeakTemplate super;
+        public DWeakTemplate weakSuper;
+        public DStrongTemplate strongSuper;
         
         // Instantiates without calling constructor
         public DTable ShallowInstantiate()
@@ -28,9 +29,13 @@ namespace Dormez.Types
 
             DTable instance = (DTable)i.evaluator.tableOp.unaryFunction.Invoke(null);
 
-            if(super != null)
+            if(weakSuper != null)
             {
-                instance.members.Add("base", new Memory.Variable(super.ShallowInstantiate()));
+                instance.members.Add("base", new Memory.Variable(weakSuper.ShallowInstantiate()));
+            }
+            else if(strongSuper != null)
+            {
+                instance.members.Add("base", new Memory.Variable(strongSuper.Instantiate(new DObject[0])));
             }
 
             i.Goto(continueAt);

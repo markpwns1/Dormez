@@ -82,19 +82,33 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    DWeakTemplate super = null;
+                    DWeakTemplate weakSuper = null;
+                    DStrongTemplate strongSuper = null;
 
                     if(i.CurrentToken == "extending")
                     {
                         i.Eat();
-                        super = Evaluate<DWeakTemplate>();
+                        var extending = Evaluate();
+                        if(extending is DStrongTemplate)
+                        {
+                            strongSuper = (DStrongTemplate)extending;
+                        }
+                        else if(extending is DWeakTemplate)
+                        {
+                            weakSuper = (DWeakTemplate)extending;
+                        }
+                        else
+                        {
+                            throw new InterpreterException(i.CurrentToken, "Expected a strong template or a weak template");
+                        }
                     }
 
                     var structure = new DWeakTemplate()
                     {
                         i = i,
                         definition = i.GetLocation(),
-                        super = super
+                        weakSuper = weakSuper,
+                        strongSuper = strongSuper
                     };
 
                     while (i.CurrentToken != "l curly")
@@ -121,8 +135,6 @@ namespace Dormez.Evaluation
                     
                     while (i.CurrentToken != "r curly")
                     {
-                        if(i.CurrentToken == "identifier")
-                        {
                             string name = i.GetIdentifier();
                             DObject value = new DUndefined();
 
@@ -144,7 +156,7 @@ namespace Dormez.Evaluation
                                 i.Eat();
                                 continue;
                             }
-                        }
+
                     }
 
                     table.members = members;
@@ -505,20 +517,15 @@ namespace Dormez.Evaluation
                     var name = i.GetIdentifier();
                     var type = left.GetType();
 
-                    if(type == typeof(DTable))
+                    if (left.MemberExists(name))
                     {
-                        //Console.WriteLine("TABLE: ");
-                        var tbl = ((DTable)left);
-                        /*foreach (var item in tbl.members)
-                        {
-                            Console.WriteLine(item.Value.ToString());
-                        }*/
-
-                        if (tbl.MemberExists(name))
-                        {
-                            lastVariable = tbl.members[name];
-                            return lastVariable.value;
-                        }
+                        lastVariable = left.members[name];
+                        return lastVariable.value;
+                    }
+                    else if(left.MemberExists("base"))
+                    {
+                        i.pointer -= 2; // recurse back to the dot, with base being the new left side
+                        return left.members["base"].value;
                     }
 
                     if(DObject.strongFunctions.ContainsKey(type))

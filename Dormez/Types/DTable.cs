@@ -10,11 +10,6 @@ namespace Dormez.Types
 {
     public class DTable : DObject
     {
-        public bool MemberExists(string name)
-        {
-            return members.ContainsKey(name);
-        }
-
         public DWeakFunction GetFunction(string name)
         {
             return AssertType<DWeakFunction>(members[name].value);
