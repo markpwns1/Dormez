@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dormez.Evaluation;
 using Dormez.Functions;
 using Dormez.Memory;
@@ -13,7 +10,7 @@ namespace Dormez.Types
     [StrongTemplate("Map")]
     public class DMap : DObject
     {
-        public Dictionary<DObject, Variable> pairs = new Dictionary<DObject, Variable>();
+        public Dictionary<DObject, Member> pairs = new Dictionary<DObject, Member>();
 
         [Member("constructor")]
         public void Constructor() { }
@@ -39,10 +36,10 @@ namespace Dormez.Types
         [Member("add")]
         public void Add(DObject key, DObject value)
         {
-            pairs.Add(key, new Variable(value));
+            pairs.Add(key, new Member(value));
         }
 
-        public override Variable OpINDEX(DObject other)
+        public override Member OpINDEX(DObject other)
         {
             var key = pairs.Keys.ToList().Find(x => x.Equals(other));
 
@@ -63,7 +60,7 @@ namespace Dormez.Types
 
             for (int i = 0; i < pairs.Count; i++)
             {
-                output += " " + keys[i].ToString() + ": " + values[i].value.ToString() + "\n";
+                output += " " + keys[i].ToString() + ": " + values[i].Value.ToString() + "\n";
             }
 
             output += "]";

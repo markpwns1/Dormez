@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Dormez.Functions;
+﻿using Dormez.Functions;
 using System.Linq;
 
 namespace Dormez.Types

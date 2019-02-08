@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dormez.Evaluation;
 using Dormez.Memory;
 
 namespace Dormez.Types
@@ -12,7 +7,7 @@ namespace Dormez.Types
     {
         public DWeakFunction GetFunction(string name)
         {
-            return AssertType<DWeakFunction>(members[name].value);
+            return AssertType<DWeakFunction>(members[name].Value);
         }
         
         public override DObject OpPOW(DObject other)
@@ -65,7 +60,7 @@ namespace Dormez.Types
             return base.OpGR(other);
         }
 
-        public override Variable OpINDEX(DObject other)
+        public override Member OpINDEX(DObject other)
         {
             throw new Exception("A table cannot be indexed. Instead, make getter and setter methods.");
         }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Dormez.Evaluation;
+using Dormez.Memory;
 
 namespace Dormez.Types
 {
@@ -47,7 +44,7 @@ namespace Dormez.Types
 
             if(owner != null)
             {
-                i.callers.Push(new Memory.Variable(owner));
+                i.callers.Push(new Member(owner));
                 //i.DeclareLocalVariable("this", owner);
             }
 

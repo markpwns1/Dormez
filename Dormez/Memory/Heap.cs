@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Dormez.Evaluation;
 using Dormez.Types;
 
@@ -64,7 +60,7 @@ namespace Dormez.Memory
 
         public DObject GetValue(string name)
         {
-            return variables[name].Peek().value;
+            return variables[name].Peek().Value;
         }
 
         public void Delete(string name)
@@ -79,13 +75,14 @@ namespace Dormez.Memory
 
         public void DeleteUnscopedVariables()
         {
-            foreach (var name in variables.Keys)
+            var keys = new List<string>(variables.Keys);
+            foreach (var name in keys)
             {
                 var toDelete = new List<Variable>();
 
                 foreach (var variable in variables[name])
                 {
-                    if (variable.depth > interpreter.depth)
+                    if (variable.Depth > interpreter.depth)
                     {
                         toDelete.Add(variable);
                     }
@@ -94,6 +91,11 @@ namespace Dormez.Memory
                 foreach (var item in toDelete)
                 {
                     variables[name].Remove(item);
+                }
+
+                if (variables[name].Count <= 0)
+                {
+                    variables.Remove(name);
                 }
             }
         }

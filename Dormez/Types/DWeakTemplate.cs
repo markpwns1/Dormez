@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dormez.Evaluation;
+﻿using Dormez.Evaluation;
+using Dormez.Memory;
 
 namespace Dormez.Types
 {
@@ -31,11 +27,11 @@ namespace Dormez.Types
 
             if(weakSuper != null)
             {
-                instance.members.Add("base", new Memory.Variable(weakSuper.ShallowInstantiate()));
+                instance.members.Add("base", new Member(weakSuper.ShallowInstantiate()));
             }
             else if(strongSuper != null)
             {
-                instance.members.Add("base", new Memory.Variable(strongSuper.Instantiate(new DObject[0])));
+                instance.members.Add("base", new Member(strongSuper.Instantiate(new DObject[0])));
             }
 
             i.Goto(continueAt);

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dormez.Memory;
 using Dormez.Types;
 
@@ -14,7 +12,7 @@ namespace Dormez.Evaluation
 
         public List<List<Operation>> precedences = new List<List<Operation>>();
 
-        private Variable lastVariable = null;
+        private Member lastVariable = null;
 
         private DVoid dvoid = DVoid.instance;
 
@@ -64,7 +62,7 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    return i.callers.Peek().value.members["base"].value;
+                    return i.callers.Peek().Value.members["base"].Value;
                 }
             };
 
@@ -73,7 +71,7 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) => {
                     lastVariable = i.callers.Peek();
-                    return lastVariable.value;
+                    return lastVariable.Value;
                 }
             };
 
@@ -131,7 +129,7 @@ namespace Dormez.Evaluation
 
                     var table = new DTable();
                     
-                    var members = new Dictionary<string, Variable>();
+                    var members = new Dictionary<string, Member>();
                     
                     while (i.CurrentToken != "r curly")
                     {
@@ -149,7 +147,7 @@ namespace Dormez.Evaluation
                                 }
                             }
 
-                            members.Add(name, new Variable(value));
+                            members.Add(name, new Member(value));
 
                             if(i.CurrentToken == "comma")
                             {
@@ -243,7 +241,7 @@ namespace Dormez.Evaluation
                         if (i.shouldBreak)
                             break;
 
-                        j.value = item.value;
+                        j.Value = item.Value;
                         i.shouldContinue = false;
                         i.ExecuteLoop();
                         i.Goto(beginning);
@@ -285,7 +283,7 @@ namespace Dormez.Evaluation
                         if (i.shouldBreak)
                             break;
 
-                        j.value = k.ToDNumber();
+                        j.Value = k.ToDNumber();
 
                         i.ExecuteLoop();
                         i.Goto(beginning);
@@ -422,7 +420,7 @@ namespace Dormez.Evaluation
                 unaryFunction = (none) =>
                 {
                     var right = Evaluate();
-                    return lastVariable.Assign((DObject.AssertType<DNumber>(lastVariable.value).ToFloat() + 1).ToDNumber());
+                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() + 1).ToDNumber();
                 }
             };
 
@@ -431,7 +429,7 @@ namespace Dormez.Evaluation
                 association = Operation.Association.Left,
                 unaryFunction = (left) =>
                 {
-                    return lastVariable.Assign((DObject.AssertType<DNumber>(lastVariable.value).ToFloat() + 1).ToDNumber());
+                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() + 1).ToDNumber();
                 }
             };
 
@@ -441,7 +439,7 @@ namespace Dormez.Evaluation
                 unaryFunction = (none) =>
                 {
                     var right = Evaluate();
-                    return lastVariable.Assign((DObject.AssertType<DNumber>(lastVariable.value).ToFloat() - 1).ToDNumber());
+                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() - 1).ToDNumber();
                 }
             };
 
@@ -450,7 +448,7 @@ namespace Dormez.Evaluation
                 association = Operation.Association.Left,
                 unaryFunction = (left) =>
                 {
-                    return lastVariable.Assign((DObject.AssertType<DNumber>(lastVariable.value).ToFloat() - 1).ToDNumber());
+                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() - 1).ToDNumber();
                 }
             };
 
@@ -486,7 +484,7 @@ namespace Dormez.Evaluation
                 unaryFunction = (left) =>
                 {
                     var v = lastVariable;
-                    return v.Assign(Evaluate());
+                    return v.Value = Evaluate();
                 }
             };
 
@@ -505,7 +503,7 @@ namespace Dormez.Evaluation
 
                     lastVariable = i.heap.Get(name);
                     
-                    return lastVariable.value;
+                    return lastVariable.Value;
                 }
             };
 
@@ -520,7 +518,7 @@ namespace Dormez.Evaluation
                     if (left.MemberExists(name))
                     {
                         lastVariable = left.members[name];
-                        return lastVariable.value;
+                        return lastVariable.Value;
                     }
                     else if(DObject.strongFunctions.ContainsKey(type))
                     {
@@ -536,7 +534,7 @@ namespace Dormez.Evaluation
                     else if (left.MemberExists("base"))
                     {
                         i.pointer -= 2; // recurse back to the dot, with base being the new left side
-                        return left.members["base"].value;
+                        return left.members["base"].Value;
                     }
 
                     throw new InterpreterException(i.CurrentToken, "Object (" + type.Name + ") does not contain member: " + name);
@@ -640,7 +638,7 @@ namespace Dormez.Evaluation
                 {
                     lastVariable = left.OpINDEX(Evaluate());
                     i.Eat("r square");
-                    return lastVariable.value;
+                    return lastVariable.Value;
                 }
             };
 
@@ -745,6 +743,8 @@ namespace Dormez.Evaluation
 
             
             precedences.Add(new List<Operation>());
+            register(thisLiteral);
+            register(baseLiteral);
             register(bracket);
             register(undefinedLiteral);
             register(arrayLiteral);
@@ -813,8 +813,6 @@ namespace Dormez.Evaluation
             register(returnStatement);
             register(forLoop);
             register(structureLiteral);
-            register(thisLiteral);
-            register(baseLiteral);
             register(include);
         }
 

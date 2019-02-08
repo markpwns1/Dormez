@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Dormez.Evaluation;
 using Dormez.Functions;
 using Dormez.Memory;
-using Dormez.StrongFunctions;
 
 /*
 
@@ -22,7 +20,7 @@ namespace Dormez.Types
         public static Dictionary<Type, List<StrongFunction>> strongFunctions = new Dictionary<Type, List<StrongFunction>>();
         public static Dictionary<string, Type> strongTemplates = new Dictionary<string, Type>();
 
-        public Dictionary<string, Variable> members = new Dictionary<string, Variable>();
+        public Dictionary<string, Member> members = new Dictionary<string, Member>();
         
         public DObject()
         {
@@ -198,7 +196,7 @@ namespace Dormez.Types
             throw OpException(GetType(), other.GetType());
         }
 
-        public virtual Variable OpINDEX(DObject other)
+        public virtual Member OpINDEX(DObject other)
         {
             throw new Exception("Type " + GetType() + " cannot be indexed");
         }

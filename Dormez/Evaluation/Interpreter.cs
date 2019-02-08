@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Dormez.Memory;
 using Dormez.StrongFunctions;
 using Dormez.Types;
@@ -18,7 +16,7 @@ namespace Dormez.Evaluation
         public Heap heap;
 
         public Stack<InterpreterLocation> loopLocations = new Stack<InterpreterLocation>();
-        public Stack<Variable> callers = new Stack<Variable>();
+        public Stack<Member> callers = new Stack<Member>();
 
         public List<string> includes = new List<string>();
 
@@ -32,6 +30,11 @@ namespace Dormez.Evaluation
 
         public bool shouldBreak = false;
         public bool shouldContinue = false;
+
+        public void ThrowException(string message)
+        {
+            throw new InterpreterException(this.CurrentToken, message);
+        }
 
         static IEnumerable<Type> GetClasses(Assembly asm, string nameSpace)
         {
