@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Dormez.Memory;
 using Dormez.StrongFunctions;
+using Dormez.Templates;
 using Dormez.Types;
 
 namespace Dormez.Evaluation
@@ -31,9 +32,9 @@ namespace Dormez.Evaluation
         public bool shouldBreak = false;
         public bool shouldContinue = false;
 
-        public void ThrowException(string message)
+        public InterpreterException Exception(string message)
         {
-            throw new InterpreterException(this.CurrentToken, message);
+            return new InterpreterException(CurrentToken, message);
         }
 
         static IEnumerable<Type> GetClasses(Assembly asm, string nameSpace)
@@ -105,12 +106,7 @@ namespace Dormez.Evaluation
         {
             return tokens[pointer + amount];
         }
-
-        private void ChangeDepth(int desiredDepth)
-        {
-            depth = desiredDepth;
-        }
-
+        
         public string GetIdentifier()
         {
             return Eat<string>("identifier");
@@ -221,6 +217,10 @@ namespace Dormez.Evaluation
             return p.ToArray();
         }
 
+        /// <summary>
+        /// Goes to a location in code, changing scope and deleting unscoped variables
+        /// </summary>
+        /// <param name="location"></param>
         public void Goto(InterpreterLocation location)
         {
             pointer = location.pointer;
@@ -234,6 +234,11 @@ namespace Dormez.Evaluation
             while(CurrentToken != "eof")
             {
                 evaluator.Evaluate();
+
+                if (depth < 0)
+                {
+                    throw this.Exception("Depth cannot be lower than zero");
+                }
             }
         }
 
@@ -293,6 +298,9 @@ namespace Dormez.Evaluation
             }
         }
 
+        /// <summary>
+        /// Skips block, should be called BEFORE l curly
+        /// </summary>
         public void SkipBlock()
         {
             int originalDepth = depth;

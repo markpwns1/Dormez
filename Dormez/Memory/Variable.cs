@@ -16,7 +16,7 @@ namespace Dormez.Memory
         {
             if(Interpreter.current.depth < Depth)
             {
-                Interpreter.current.ThrowException("Attempted to access an out of scope variable");
+                Interpreter.current.Exception("Attempted to access an out of scope variable");
             }
 
             return _value;

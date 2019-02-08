@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Dormez.Functions;
+using Dormez.Types;
 
-namespace Dormez.Types
+namespace Dormez.Functions
 {
-    public class DStrongFunction : DObject
+    public class DStrongFunction : DFunction
     {
         public DObject parent;
         public StrongFunction methodInfo;
@@ -15,7 +15,7 @@ namespace Dormez.Types
             this.parent = parent;
         }
 
-        public DObject Call(object[] parameters)
+        public override DObject Call(DObject[] parameters)
         {
             if (methodInfo.method.ReturnType == typeof(void))
             {

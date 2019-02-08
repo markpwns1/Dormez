@@ -32,10 +32,10 @@ namespace Dormez.Memory
         
         public Variable DeclareLocalVariable(string name)
         {
-            return DeclareLocalVariable(name, null);
+            return DeclareLocal(name, null);
         }
 
-        public Variable DeclareLocalVariable(string name, DObject val)
+        public Variable DeclareLocal(string name, DObject val)
         {
             val = val == null ? DUndefined.instance : val;
 
@@ -63,7 +63,7 @@ namespace Dormez.Memory
             return variables[name].Peek().Value;
         }
 
-        public void Delete(string name)
+        public void DeleteLocal(string name)
         {
             variables[name].Pop();
 
@@ -84,6 +84,7 @@ namespace Dormez.Memory
                 {
                     if (variable.Depth > interpreter.depth)
                     {
+
                         toDelete.Add(variable);
                     }
                 }

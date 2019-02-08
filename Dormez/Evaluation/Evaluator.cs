@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dormez.Functions;
 using Dormez.Memory;
+using Dormez.Templates;
 using Dormez.Types;
 
 namespace Dormez.Evaluation
@@ -80,20 +82,16 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    DWeakTemplate weakSuper = null;
-                    DStrongTemplate strongSuper = null;
+                    DTemplate super = null;
 
                     if(i.CurrentToken == "extending")
                     {
                         i.Eat();
                         var extending = Evaluate();
-                        if(extending is DStrongTemplate)
+
+                        if(extending is DTemplate)
                         {
-                            strongSuper = (DStrongTemplate)extending;
-                        }
-                        else if(extending is DWeakTemplate)
-                        {
-                            weakSuper = (DWeakTemplate)extending;
+                            super = (DTemplate)extending;
                         }
                         else
                         {
@@ -105,8 +103,7 @@ namespace Dormez.Evaluation
                     {
                         i = i,
                         definition = i.GetLocation(),
-                        weakSuper = weakSuper,
-                        strongSuper = strongSuper
+                        super = super
                     };
 
                     while (i.CurrentToken != "l curly")
@@ -247,7 +244,7 @@ namespace Dormez.Evaluation
                         i.Goto(beginning);
                     }
                     
-                    i.heap.Delete(varName);
+                    i.heap.DeleteLocal(varName);
                     i.EndLoop();
 
                     return dvoid;
@@ -289,7 +286,7 @@ namespace Dormez.Evaluation
                         i.Goto(beginning);
                     }
                     
-                    i.heap.Delete(varName);
+                    i.heap.DeleteLocal(varName);
                     i.EndLoop();
 
                     return dvoid;
@@ -472,7 +469,7 @@ namespace Dormez.Evaluation
                         value = Evaluate();
                     }
 
-                    i.heap.DeclareLocalVariable(name, value);
+                    i.heap.DeclareLocal(name, value);
 
                     return dvoid;
                 }
@@ -545,22 +542,19 @@ namespace Dormez.Evaluation
             {
                 association = Operation.Association.Left,
                 unaryFunction = (left) => {
-                    var p = i.GetParameters();
-                    if (left.GetType() == typeof(DWeakFunction))
+                    var parameters = i.GetParameters();
+
+                    if(left is DFunction)
                     {
-                        return DObject.AssertType<DWeakFunction>(left).Call(p);
+                        return ((DFunction)left).Call(parameters);
                     }
-                    else if(left.GetType() == typeof(DWeakTemplate))
+                    else if(left is DTemplate)
                     {
-                        return DObject.AssertType<DWeakTemplate>(left).Instantiate(p);
-                    }
-                    else if(left.GetType() == typeof(DStrongTemplate))
-                    {
-                        return DObject.AssertType<DStrongTemplate>(left).Instantiate(p);
+                        return ((DTemplate)left).Instantiate(parameters);
                     }
                     else
                     {
-                        return DObject.AssertType<DStrongFunction>(left).Call(p);
+                        throw i.Exception("Can only invoke a function or a template");
                     }
                 }
             };

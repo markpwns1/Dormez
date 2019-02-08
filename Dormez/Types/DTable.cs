@@ -1,4 +1,5 @@
 ﻿using System;
+using Dormez.Functions;
 using Dormez.Memory;
 
 namespace Dormez.Types

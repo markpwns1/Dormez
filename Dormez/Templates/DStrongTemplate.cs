@@ -1,8 +1,9 @@
 ﻿using System;
+using Dormez.Types;
 
-namespace Dormez.Types
+namespace Dormez.Templates
 {
-    public class DStrongTemplate : DObject
+    public class DStrongTemplate : DTemplate
     {
         Type toInstantiate;
 
@@ -11,7 +12,7 @@ namespace Dormez.Types
             toInstantiate = t;
         }
 
-        public DObject Instantiate(DObject[] inputs)
+        public override DObject Instantiate(DObject[] inputs, bool init)
         {
             return (DObject)Activator.CreateInstance(toInstantiate, inputs);
         }
