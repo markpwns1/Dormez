@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dormez.Functions;
+using System.Linq;
 
 namespace Dormez.Types
 {
@@ -25,17 +25,29 @@ namespace Dormez.Types
         {
             return new DString(value + other.ToString());
         }
+        
+        [Member("replace")]
+        public string Replace(DString from, DString to) => value.Replace(from.ToString(), to.ToString());
+
+        [Member("contains")]
+        public bool Contains(DString v) => value.Contains(v.ToString());
+        
+        [Member("endsWith")]
+        public bool EndsWith(DString v) => value.EndsWith(v.ToString());
+        
+        [Member("startsWith")]
+        public bool StartsWith(DString v) => value.StartsWith(v.ToString());
 
         [Member("length")]
-        public DNumber Length()
-        {
-            return value.Length.ToDNumber();
-        }
+        public int Length() => value.Length;
 
         [Member("toNumber")]
-        public DNumber ToDNumber()
+        public int ToDNumber() => int.Parse(value);
+
+        [Member("getChars")]
+        public DSet GetChars()
         {
-            return int.Parse(value).ToDNumber();
+            return new DSet(value.ToCharArray().Select(x => x.ToDChar()));
         }
 
         public override DObject Clone()

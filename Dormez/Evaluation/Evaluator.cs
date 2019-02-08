@@ -522,13 +522,7 @@ namespace Dormez.Evaluation
                         lastVariable = left.members[name];
                         return lastVariable.value;
                     }
-                    else if(left.MemberExists("base"))
-                    {
-                        i.pointer -= 2; // recurse back to the dot, with base being the new left side
-                        return left.members["base"].value;
-                    }
-
-                    if(DObject.strongFunctions.ContainsKey(type))
+                    else if(DObject.strongFunctions.ContainsKey(type))
                     {
                         var methods = DObject.strongFunctions[type];
                         var method = methods.Find(x => x.callableName == name);
@@ -538,6 +532,11 @@ namespace Dormez.Evaluation
                             lastVariable = null;
                             return new DStrongFunction(method, left);
                         }
+                    }
+                    else if (left.MemberExists("base"))
+                    {
+                        i.pointer -= 2; // recurse back to the dot, with base being the new left side
+                        return left.members["base"].value;
                     }
 
                     throw new InterpreterException(i.CurrentToken, "Object (" + type.Name + ") does not contain member: " + name);
@@ -744,26 +743,7 @@ namespace Dormez.Evaluation
                 precedences.Last().Add(op);
             }
 
-            precedences.Add(new List<Operation>());
-            register(semicolon);
-            register(declaration);
-            register(closeBracket);
-            register(openBracket);
-            register(ifStatement);
-            register(whileLoop);
-            register(untilLoop);
-            register(forEachLoop);
-            register(continueStatement);
-            register(breakStatement);
-            register(funcLiteral);
-            register(returnStatement);
-            register(forLoop);
-            register(structureLiteral);
-            register(thisLiteral);
-            register(baseLiteral);
-            register(include);
-            //precedences.Add(new List<Operation>());
-
+            
             precedences.Add(new List<Operation>());
             register(bracket);
             register(undefinedLiteral);
@@ -776,7 +756,6 @@ namespace Dormez.Evaluation
 
             precedences.Add(new List<Operation>());
             register(identifier);
-
             register(methodCall);
             register(traverse);
             register(index);
@@ -818,6 +797,25 @@ namespace Dormez.Evaluation
 
             precedences.Add(new List<Operation>());
             register(or);
+
+            precedences.Add(new List<Operation>());
+            register(semicolon);
+            register(declaration);
+            register(closeBracket);
+            register(openBracket);
+            register(ifStatement);
+            register(whileLoop);
+            register(untilLoop);
+            register(forEachLoop);
+            register(continueStatement);
+            register(breakStatement);
+            register(funcLiteral);
+            register(returnStatement);
+            register(forLoop);
+            register(structureLiteral);
+            register(thisLiteral);
+            register(baseLiteral);
+            register(include);
         }
 
         public T Evaluate<T>()
