@@ -1,5 +1,5 @@
 # Dormez
-Dormez is an interpreted programming language I made for fun. It supports the following:
+Dormez is an interpreted programming language. It supports the following:
 * Primitive types (number, string, bool, etc.)
 * Non-primitive types (console, file, etc.)
 * If/else if/else statements
@@ -82,7 +82,7 @@ The lower bound, upper bound, and increment can be evaluated, so they do not hav
     
     // also legal
     // from 9 to -1 by -1 with i
-    from (80 + 1).sqrt() to (1-1)^3 - 1 by (-1).nthRoot(3) with i {
+    from math.sqrt(80 + 1) to (1-1)^3 - 1 by math.nthRoot(-1, 3) with i {
         console.print(i);
     }
     // Keep in mind that the 'upper bound' (-1) is exclusive, so it will iterate from 9-0
