@@ -1,4 +1,5 @@
 ﻿using Dormez.Memory;
+using Dormez.Templates;
 
 namespace Dormez.Types
 {

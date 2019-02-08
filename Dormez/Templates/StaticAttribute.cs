@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dormez.Memory
+namespace Dormez.Templates
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class StaticAttribute : Attribute

@@ -46,7 +46,7 @@ namespace Dormez.Functions
 
             if(owner != null)
             {
-                i.callers.Push(new Member(owner));
+                i.functionOwners.Push(owner);
                 //i.DeclareLocalVariable("this", owner);
             }
 
@@ -59,7 +59,7 @@ namespace Dormez.Functions
 
             if(owner != null)
             {
-                i.callers.Pop();
+                i.functionOwners.Pop();
                 //i.variables.Remove("this");
             }
 

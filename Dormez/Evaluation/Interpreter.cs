@@ -16,7 +16,7 @@ namespace Dormez.Evaluation
         public Heap heap;
 
         public Stack<InterpreterLocation> loopLocations = new Stack<InterpreterLocation>();
-        public Stack<Member> callers = new Stack<Member>();
+        public Stack<DObject> functionOwners = new Stack<DObject>();
 
         public List<string> includes = new List<string>();
 

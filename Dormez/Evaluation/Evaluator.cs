@@ -64,7 +64,8 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    return i.callers.Peek().Value.members["base"].Value;
+                    lastVariable = i.functionOwners.Peek().members["base"];
+                    return i.functionOwners.Peek().members["base"].Value;
                 }
             };
 
@@ -72,7 +73,7 @@ namespace Dormez.Evaluation
             {
                 association = Operation.Association.None,
                 unaryFunction = (none) => {
-                    lastVariable = i.callers.Peek();
+                    lastVariable = new ReadOnlyVariable(i.functionOwners.Peek(), i.depth);
                     return lastVariable.Value;
                 }
             };
@@ -228,7 +229,7 @@ namespace Dormez.Evaluation
                     i.Eat("in");
                     DSet set = Evaluate<DSet>();
 
-                    var j = i.heap.DeclareLocalVariable(varName);
+                    var j = i.heap.DeclareLocal(varName);
                     var beginning = i.GetLocation();
 
                     i.BeginLoop(beginning);
@@ -269,7 +270,7 @@ namespace Dormez.Evaluation
                     }
                     i.Eat("with");
                     string varName = i.GetIdentifier();
-                    var j = i.heap.DeclareLocalVariable(varName);
+                    var j = i.heap.DeclareLocal(varName);
 
                     var beginning = i.GetLocation();
 

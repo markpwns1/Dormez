@@ -30,9 +30,25 @@ namespace Dormez.Memory
             return v;
         }
         
-        public Variable DeclareLocalVariable(string name)
+        public Variable DeclareLocal(string name)
         {
             return DeclareLocal(name, null);
+        }
+
+        public ReadOnlyVariable DeclareReadOnly(string name, DObject val)
+        {
+            var v = new ReadOnlyVariable(val, interpreter.depth);
+
+            if (!variables.ContainsKey(name))
+            {
+                var stack = new VarStack();
+                stack.Push(v);
+                variables.Add(name, stack);
+            }
+
+            variables[name].Push(v);
+
+            return v;
         }
 
         public Variable DeclareLocal(string name, DObject val)
