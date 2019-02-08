@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Dormez.Types;
 
 namespace Dormez.Functions
@@ -7,9 +8,9 @@ namespace Dormez.Functions
     public class DStrongFunction : DFunction
     {
         public DObject parent;
-        public StrongFunction methodInfo;
+        public MethodInfo methodInfo;
 
-        public DStrongFunction(StrongFunction m, DObject parent)
+        public DStrongFunction(MethodInfo m, DObject parent)
         {
             methodInfo = m;
             this.parent = parent;
@@ -17,38 +18,38 @@ namespace Dormez.Functions
 
         public override DObject Call(DObject[] parameters)
         {
-            if (methodInfo.method.ReturnType == typeof(void))
+            if (methodInfo.ReturnType == typeof(void))
             {
-                methodInfo.method.Invoke(parent, parameters);
+                methodInfo.Invoke(parent, parameters);
                 return DVoid.instance;
             }
-            else if(methodInfo.method.ReturnType == typeof(float))
+            else if(methodInfo.ReturnType == typeof(float))
             {
-                return ((float)methodInfo.method.Invoke(parent, parameters)).ToDNumber();
+                return ((float)methodInfo.Invoke(parent, parameters)).ToDNumber();
             }
-            else if(methodInfo.method.ReturnType == typeof(double))
+            else if(methodInfo.ReturnType == typeof(double))
             {
-                return ((double)methodInfo.method.Invoke(parent, parameters)).ToDNumber();
+                return ((double)methodInfo.Invoke(parent, parameters)).ToDNumber();
             }
-            else if(methodInfo.method.ReturnType == typeof(double))
+            else if(methodInfo.ReturnType == typeof(double))
             {
-                return ((int)methodInfo.method.Invoke(parent, parameters)).ToDNumber();
+                return ((int)methodInfo.Invoke(parent, parameters)).ToDNumber();
             }
-            else if(methodInfo.method.ReturnType == typeof(bool))
+            else if(methodInfo.ReturnType == typeof(bool))
             {
-                return ((bool)methodInfo.method.Invoke(parent, parameters)).ToDBool();
+                return ((bool)methodInfo.Invoke(parent, parameters)).ToDBool();
             }
-            else if(methodInfo.method.ReturnType == typeof(string))
+            else if(methodInfo.ReturnType == typeof(string))
             {
-                return methodInfo.method.Invoke(parent, parameters).ToString().ToDString();
+                return methodInfo.Invoke(parent, parameters).ToString().ToDString();
             }
-            else if(typeof(IEnumerable).IsAssignableFrom(methodInfo.method.ReturnType))
+            else if(typeof(IEnumerable).IsAssignableFrom(methodInfo.ReturnType))
             {
-                return new DSet((IEnumerable<DObject>)methodInfo.method.Invoke(parent, parameters));
+                return new DSet((IEnumerable<DObject>)methodInfo.Invoke(parent, parameters));
             }
             else
             {
-                var result = methodInfo.method.Invoke(parent, parameters);
+                var result = methodInfo.Invoke(parent, parameters);
 
                 if(result == null)
                 {
@@ -63,7 +64,7 @@ namespace Dormez.Functions
 
         public override string ToString()
         {
-            return "strong function " + methodInfo.method.DeclaringType.Name + "." + methodInfo.callableName;
+            return "strong function";
         }
     }
 }

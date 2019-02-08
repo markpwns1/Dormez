@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dormez.Memory;
-using Dormez.StrongFunctions;
 using Dormez.Templates;
 using Dormez.Types;
 

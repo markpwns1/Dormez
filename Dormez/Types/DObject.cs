@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Dormez.Functions;
 using Dormez.Memory;
+using Dormez.Templates;
 
 /*
 
@@ -17,7 +17,7 @@ namespace Dormez.Types
 {
     public class DObject
     {
-        public static Dictionary<Type, List<StrongFunction>> strongFunctions = new Dictionary<Type, List<StrongFunction>>();
+        public static Dictionary<Type, Dictionary<string, MethodInfo>> strongFunctions = new Dictionary<Type, Dictionary<string, MethodInfo>>();
         public static Dictionary<string, Type> strongTemplates = new Dictionary<string, Type>();
 
         public Dictionary<string, Member> members = new Dictionary<string, Member>();
@@ -25,10 +25,10 @@ namespace Dormez.Types
         public DObject()
         {
             Type type = GetType();
-
+            
             if (!strongFunctions.ContainsKey(type))
             {
-                List<StrongFunction> methods = new List<StrongFunction>();
+                Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
 
                 foreach (var method in type.GetMethods())
                 {
@@ -38,14 +38,8 @@ namespace Dormez.Types
                     {
                         continue;
                     }
-
-                    var registered = new StrongFunction()
-                    {
-                        callableName = memberAttrib.callableName,
-                        method = method
-                    };
-
-                    methods.Add(registered);
+                    
+                    methods.Add(memberAttrib.callableName, method);
                 }
 
                 foreach(var property in type.GetProperties())
@@ -61,24 +55,22 @@ namespace Dormez.Types
 
                     foreach (var accessor in accessors)
                     {
-                        StrongFunction registered = new StrongFunction();
-
-                        registered.method = accessor;
+                        string callableName;
 
                         if(accessor.Name.StartsWith("get_"))
                         {
-                            registered.callableName = "get" + memberAttrib.callableName;
+                            callableName = "get" + memberAttrib.callableName;
                         }
                         else if(accessor.Name.StartsWith("set_"))
                         {
-                            registered.callableName = "set" + memberAttrib.callableName;
+                            callableName = "set" + memberAttrib.callableName;
                         }
                         else
                         {
                             throw new Exception("Accessor is not an accessor?");
                         }
 
-                        methods.Add(registered);
+                        methods.Add(callableName, accessor);
                     }
                 }
 

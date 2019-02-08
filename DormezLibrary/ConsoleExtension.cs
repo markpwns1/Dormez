@@ -1,6 +1,4 @@
-﻿using Dormez.Functions;
-using Dormez.Memory;
-using Dormez.StrongFunctions;
+﻿using Dormez.Memory;
 
 namespace Dormez.Types
 {

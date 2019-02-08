@@ -1,5 +1,5 @@
 ﻿using System;
-using Dormez.Functions;
+using Dormez.Templates;
 
 namespace Dormez.Types
 {
@@ -92,7 +92,5 @@ namespace Dormez.Types
         {
             return ((char)ToInt()).ToDChar();
         }
-        
-        
     }
 }

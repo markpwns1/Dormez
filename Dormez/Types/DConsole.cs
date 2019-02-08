@@ -1,6 +1,6 @@
 ﻿using System;
-using Dormez.Functions;
 using Dormez.Memory;
+using Dormez.Templates;
 
 namespace Dormez.Types
 {

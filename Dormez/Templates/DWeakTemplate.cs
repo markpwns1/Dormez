@@ -1,5 +1,4 @@
-﻿using System;
-using Dormez.Evaluation;
+﻿using Dormez.Evaluation;
 using Dormez.Memory;
 using Dormez.Types;
 

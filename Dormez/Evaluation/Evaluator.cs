@@ -520,7 +520,7 @@ namespace Dormez.Evaluation
                     else if(DObject.strongFunctions.ContainsKey(type))
                     {
                         var methods = DObject.strongFunctions[type];
-                        var method = methods.Find(x => x.callableName == name);
+                        var method = methods[name];
 
                         if(method != null)
                         {

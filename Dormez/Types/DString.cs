@@ -1,5 +1,5 @@
-﻿using Dormez.Functions;
-using System.Linq;
+﻿using System.Linq;
+using Dormez.Templates;
 
 namespace Dormez.Types
 {

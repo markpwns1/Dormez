@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dormez.Functions
+namespace Dormez.Templates
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class MemberAttribute : Attribute
