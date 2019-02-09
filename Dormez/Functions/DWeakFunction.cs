@@ -35,7 +35,7 @@ namespace Dormez.Functions
 
             if(parameters.Count != inputs.Length)
             {
-                throw new InterpreterException(i.CurrentToken, "Parameter count mismatch: expected " + parameters.Count + " arguments but got " + inputs.Length);
+                throw new InterpreterException(i.tokens[continueAt.pointer], "Parameter count mismatch: expected " + parameters.Count + " arguments but got " + inputs.Length);
             }
 
             for (int j = 0; j < parameters.Count; j++)

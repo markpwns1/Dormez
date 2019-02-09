@@ -118,7 +118,7 @@ namespace Dormez.Evaluation
                 return Eat<T>();
             }
 
-            throw new InterpreterException(CurrentToken, "Expected " + type + " but got " + CurrentToken + " at token #" + pointer);
+            throw new InterpreterException(CurrentToken, "Expected " + type + " but got " + CurrentToken.Type);
         }
 
         public object Eat(string type)

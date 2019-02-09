@@ -496,7 +496,7 @@ namespace Dormez.Evaluation
 
                     if(!i.heap.Exists(name))
                     {
-                        throw new InterpreterException(i.PreviousToken, "Variable does not exist in this scope: " + name);
+                        throw new InterpreterException(i.CurrentToken, "Variable does not exist in this scope: " + name);
                     }
 
                     lastVariable = i.heap.Get(name);
@@ -521,10 +521,10 @@ namespace Dormez.Evaluation
                     else if(StrongTypeRegistry.strongFunctions.ContainsKey(type))
                     {
                         var methods = StrongTypeRegistry.strongFunctions[type];
-                        var method = methods[name];
 
-                        if(method != null)
+                        if(methods.ContainsKey(name))
                         {
+                            var method = methods[name];
                             lastVariable = null;
                             return new DStrongFunction(method, left);
                         }

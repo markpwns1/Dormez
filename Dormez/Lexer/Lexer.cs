@@ -326,27 +326,6 @@ namespace Dormez
             }
         }
 
-        //private static LazuritNumber GetNegativeNumber()
-        //{
-        //    string result = "-";
-
-        //    bool usedDecimal = false;
-
-        //    while (pointer < inputText.Length && (char.IsDigit(CurrentChar) || (CurrentChar == '.' && !usedDecimal && char.IsDigit(NextChar))))
-        //    {
-        //        result += CurrentChar;
-
-        //        if (CurrentChar == '.')
-        //        {
-        //            usedDecimal = true;
-        //        }
-
-        //        Eat();
-        //    }
-
-        //    return new LazuritNumber(float.Parse(result));
-        //}
-
         private static float GetNumber()
         {
             string result = "";
@@ -400,11 +379,6 @@ namespace Dormez
         {
             while (pointer < inputText.Length && char.IsWhiteSpace(CurrentChar))
             {
-                if (CurrentChar == '\n')
-                {
-                    NewLine();
-                }
-
                 Eat();
             }
         }
@@ -420,29 +394,6 @@ namespace Dormez
         private static char NextChar
         {
             get { return inputText[pointer + 1]; }
-        }
-
-        private static string GetEquals()
-        {
-            string result = "=";
-            Eat();
-            if (CurrentChar == '=')
-            {
-                result += '=';
-                Eat();
-            }
-            return result;
-        }
-
-        private static string GetComparator(string result)
-        {
-            Eat();
-            if (CurrentChar == '=')
-            {
-                result += '=';
-                Eat();
-            }
-            return result;
         }
 
         private static void SkipSingleLineComment()
@@ -474,12 +425,7 @@ namespace Dormez
                 Eat();
             }
         }
-
-        private static int GetPosition()
-        {
-            return pointer;
-        }
-
+        
         public static bool IsSymbol(char c)
         {
             return !char.IsLetterOrDigit(c) && !char.IsWhiteSpace(c);
@@ -521,7 +467,7 @@ namespace Dormez
 
                 if (symbols.ContainsKey(trimmed))
                 {
-                    pointer += trimmed.Length;
+                    Eat(trimmed.Length);
                     return symbols[trimmed];
                 }
             }
