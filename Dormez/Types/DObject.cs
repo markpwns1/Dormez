@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
-using Dormez.Evaluation;
-using Dormez.Functions;
 using Dormez.Memory;
-using Dormez.StrongFunctions;
+using Dormez.Templates;
 
 /*
 
@@ -17,84 +16,8 @@ NOTES:
 
 namespace Dormez.Types
 {
-    public class DObject
+    public partial class DObject
     {
-        public static Dictionary<Type, List<StrongFunction>> strongFunctions = new Dictionary<Type, List<StrongFunction>>();
-        public static Dictionary<string, Type> strongTemplates = new Dictionary<string, Type>();
-
-        public Dictionary<string, Variable> members = new Dictionary<string, Variable>();
-        
-        public DObject()
-        {
-            Type type = GetType();
-
-            if (!strongFunctions.ContainsKey(type))
-            {
-                List<StrongFunction> methods = new List<StrongFunction>();
-
-                foreach (var method in type.GetMethods())
-                {
-                    var memberAttrib = method.GetCustomAttribute<MemberAttribute>();
-
-                    if (memberAttrib == null)
-                    {
-                        continue;
-                    }
-
-                    var registered = new StrongFunction()
-                    {
-                        callableName = memberAttrib.callableName,
-                        method = method
-                    };
-
-                    methods.Add(registered);
-                }
-
-                foreach(var property in type.GetProperties())
-                {
-                    var memberAttrib = property.GetCustomAttribute<MemberAttribute>();
-
-                    if(memberAttrib == null)
-                    {
-                        continue;
-                    }
-
-                    var accessors = property.GetAccessors();
-
-                    foreach (var accessor in accessors)
-                    {
-                        StrongFunction registered = new StrongFunction();
-
-                        registered.method = accessor;
-
-                        if(accessor.Name.StartsWith("get_"))
-                        {
-                            registered.callableName = "get" + memberAttrib.callableName;
-                        }
-                        else if(accessor.Name.StartsWith("set_"))
-                        {
-                            registered.callableName = "set" + memberAttrib.callableName;
-                        }
-                        else
-                        {
-                            throw new Exception("Accessor is not an accessor?");
-                        }
-
-                        methods.Add(registered);
-                    }
-                }
-
-                strongFunctions.Add(type, methods);
-            }
-
-            
-        }
-
-        public bool MemberExists(string name)
-        {
-            return members.ContainsKey(name);
-        }
-
         protected Exception OpException(Type leftSide)
         {
             var st = new StackTrace();
@@ -198,7 +121,7 @@ namespace Dormez.Types
             throw OpException(GetType(), other.GetType());
         }
 
-        public virtual Variable OpINDEX(DObject other)
+        public virtual Member OpINDEX(DObject other)
         {
             throw new Exception("Type " + GetType() + " cannot be indexed");
         }

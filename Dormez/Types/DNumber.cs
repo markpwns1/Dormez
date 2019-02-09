@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dormez.Functions;
+using Dormez.Templates;
 
 namespace Dormez.Types
 {
@@ -96,7 +92,5 @@ namespace Dormez.Types
         {
             return ((char)ToInt()).ToDChar();
         }
-        
-        
     }
 }

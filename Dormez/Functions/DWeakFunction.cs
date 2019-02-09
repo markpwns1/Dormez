@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Dormez.Evaluation;
+using Dormez.Memory;
+using Dormez.Types;
 
-namespace Dormez.Types
+namespace Dormez.Functions
 {
-    public class DWeakFunction : DObject
+    public class DWeakFunction : DFunction
     {
         public DTable owner = null;
         public Interpreter i;
         public InterpreterLocation location;
 
-        public DObject Call(DObject[] inputs)
+        public override DObject Call(DObject[] inputs)
         {
             var continueAt = i.GetLocation();
 
@@ -42,12 +40,13 @@ namespace Dormez.Types
 
             for (int j = 0; j < parameters.Count; j++)
             {
-                i.heap.DeclareLocalVariable(parameters[j], inputs[j]);
+                //Console.WriteLine("DECLARED " + parameters[j]);
+                i.heap.DeclareLocal(parameters[j], inputs[j]);
             }
 
             if(owner != null)
             {
-                i.callers.Push(new Memory.Variable(owner));
+                i.functionOwners.Push(owner);
                 //i.DeclareLocalVariable("this", owner);
             }
 
@@ -55,12 +54,12 @@ namespace Dormez.Types
 
             foreach (var p in parameters)
             {
-                i.heap.Delete(p);
+                i.heap.DeleteLocal(p);
             }
 
             if(owner != null)
             {
-                i.callers.Pop();
+                i.functionOwners.Pop();
                 //i.variables.Remove("this");
             }
 

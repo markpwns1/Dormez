@@ -1,32 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dormez.Functions;
 using Dormez.Memory;
+using Dormez.Templates;
 
 namespace Dormez.Types
 {
     public class DSet : DObject
     {
-        public List<Variable> items = new List<Variable>();
+        public List<Member> items = new List<Member>();
 
         public DSet(IEnumerable<DObject> initialized)
         {
-            items = initialized.Select(x => new Variable(x)).ToList();
+            items = initialized.Select(x => new Member(x)).ToList();
         }
 
         [Member("at")]
         public DObject Get(DNumber index)
         {
-            return items[index.ToInt()].value;
+            return items[index.ToInt()].Value;
         }
 
         [Member("set")]
         public DObject Set(DNumber index, DObject value)
         {
-            return items[index.ToInt()].Assign(value);
+            return items[index.ToInt()].Value = value;
+        }
+
+        [Member("length")]
+        public int Length
+        {
+            get { return items.Count; }
         }
 
         public override bool Equals(object obj)
@@ -34,22 +37,22 @@ namespace Dormez.Types
             return items.SequenceEqual(AssertType<DSet>(obj).items);
         }
 
-        public override Variable OpINDEX(DObject other)
+        public override Member OpINDEX(DObject other)
         {
             return items[AssertType<DNumber>(other).ToInt()];
         }
 
         public override DObject Clone()
         {
-            return new DSet(items.Select(x => x.value.Clone()));
+            return new DSet(items.Select(x => x.Value.Clone()));
         }
-
+        
         public override string ToString()
         {
             string s = "[ ";
             for (int i = 0; i < items.Count; i++)
             {
-                s += items[i].value.ToString();
+                s += items[i].Value.ToString();
 
                 if(i != items.Count - 1)
                 {

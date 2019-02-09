@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dormez.Functions;
 using Dormez.Memory;
+using Dormez.Templates;
 
 namespace Dormez.Types
 {
     [Static("console")]
     public class DConsole : DObject
     {
-        [Member("Title")]
+        [Member("title")]
         public DString Title
         {
             get { return Console.Title.ToDString(); }

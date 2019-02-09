@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Dormez.Memory;
-using Dormez.StrongFunctions;
+using Dormez.Templates;
 using Dormez.Types;
 
 namespace Dormez.Evaluation
@@ -18,7 +16,7 @@ namespace Dormez.Evaluation
         public Heap heap;
 
         public Stack<InterpreterLocation> loopLocations = new Stack<InterpreterLocation>();
-        public Stack<Variable> callers = new Stack<Variable>();
+        public Stack<DObject> functionOwners = new Stack<DObject>();
 
         public List<string> includes = new List<string>();
 
@@ -32,6 +30,11 @@ namespace Dormez.Evaluation
 
         public bool shouldBreak = false;
         public bool shouldContinue = false;
+
+        public InterpreterException Exception(string message)
+        {
+            return new InterpreterException(CurrentToken, message);
+        }
 
         static IEnumerable<Type> GetClasses(Assembly asm, string nameSpace)
         {
@@ -59,18 +62,18 @@ namespace Dormez.Evaluation
                 }
             }
 
-            foreach (var c in classes)
+            foreach (var type in classes)
             {
-                var staticAttrib = c.GetCustomAttribute<StaticAttribute>();
-                var publicAttrib = c.GetCustomAttribute<StrongTemplateAttribute>();
+                var staticAttrib = type.GetCustomAttribute<StaticAttribute>();
+                var publicAttrib = type.GetCustomAttribute<StrongTemplateAttribute>();
 
                 if (staticAttrib != null)
                 {
-                    heap.DeclareGlobalVariable(staticAttrib.name, (DObject)Activator.CreateInstance(c));
+                    heap.DeclareGlobalVariable(staticAttrib.name, StrongTypeRegistry.Instantiate(type, null));
                 }
                 else if(publicAttrib != null)
                 {
-                    heap.DeclareGlobalVariable(publicAttrib.name, new DStrongTemplate(c));
+                    heap.DeclareGlobalVariable(publicAttrib.name, new DStrongTemplate(type));
                 }
             }
         }
@@ -102,12 +105,7 @@ namespace Dormez.Evaluation
         {
             return tokens[pointer + amount];
         }
-
-        private void ChangeDepth(int desiredDepth)
-        {
-            depth = desiredDepth;
-        }
-
+        
         public string GetIdentifier()
         {
             return Eat<string>("identifier");
@@ -218,6 +216,10 @@ namespace Dormez.Evaluation
             return p.ToArray();
         }
 
+        /// <summary>
+        /// Goes to a location in code, changing scope and deleting unscoped variables
+        /// </summary>
+        /// <param name="location"></param>
         public void Goto(InterpreterLocation location)
         {
             pointer = location.pointer;
@@ -231,6 +233,11 @@ namespace Dormez.Evaluation
             while(CurrentToken != "eof")
             {
                 evaluator.Evaluate();
+
+                if (depth < 0)
+                {
+                    throw this.Exception("Depth cannot be lower than zero");
+                }
             }
         }
 
@@ -290,6 +297,9 @@ namespace Dormez.Evaluation
             }
         }
 
+        /// <summary>
+        /// Skips block, should be called BEFORE l curly
+        /// </summary>
         public void SkipBlock()
         {
             int originalDepth = depth;

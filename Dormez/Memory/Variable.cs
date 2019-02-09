@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Dormez.Evaluation;
 using Dormez.Types;
-using System.Threading.Tasks;
 
 namespace Dormez.Memory
 {
-    public class Variable
+    public class Variable : Member
     {
-        public DObject value;
-        public int depth;
-
-        public Variable(DObject value, int depth = -1)
+        public int Depth { get; }
+        
+        public Variable(DObject value, int depth) : base(value)
         {
-            this.depth = depth;
-            this.value = value;
+            this.Depth = depth;
         }
 
-        public DObject Assign(DObject value)
+        protected override DObject GetValue()
         {
-            return this.value = value;
+            if(Interpreter.current.depth < Depth)
+            {
+                Interpreter.current.Exception("Attempted to access an out of scope variable");
+            }
+
+            return _value;
         }
     }
 }
