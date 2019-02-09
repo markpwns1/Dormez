@@ -5,21 +5,21 @@ namespace Dormez.Templates
 {
     public class DStrongTemplate : DTemplate
     {
-        Type toInstantiate;
+        Type template;
 
-        public DStrongTemplate(Type t)
+        public DStrongTemplate(Type templ)
         {
-            toInstantiate = t;
+            template = templ;
         }
 
         public override DObject Instantiate(DObject[] inputs, bool init)
         {
-            return (DObject)Activator.CreateInstance(toInstantiate, inputs);
+            return StrongTypeRegistry.Instantiate(template, inputs);
         }
 
         public override string ToString()
         {
-            return "strong template " + toInstantiate.Name;
+            return "(strong template) " + template.Name;
         }
     }
 }

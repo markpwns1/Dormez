@@ -21,9 +21,9 @@ namespace Dormez.Types
         }
 
         [Member("length")]
-        public DNumber Length()
+        public int Length
         {
-            return pairs.Count.ToDNumber();
+            get { return pairs.Count; }
         }
 
         [Member("remove")]

@@ -26,6 +26,12 @@ namespace Dormez.Types
             return items[index.ToInt()].Value = value;
         }
 
+        [Member("length")]
+        public int Length
+        {
+            get { return items.Count; }
+        }
+
         public override bool Equals(object obj)
         {
             return items.SequenceEqual(AssertType<DSet>(obj).items);
@@ -40,7 +46,7 @@ namespace Dormez.Types
         {
             return new DSet(items.Select(x => x.Value.Clone()));
         }
-
+        
         public override string ToString()
         {
             string s = "[ ";

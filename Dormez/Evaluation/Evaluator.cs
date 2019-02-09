@@ -518,9 +518,9 @@ namespace Dormez.Evaluation
                         lastVariable = left.members[name];
                         return lastVariable.Value;
                     }
-                    else if(DObject.strongFunctions.ContainsKey(type))
+                    else if(StrongTypeRegistry.strongFunctions.ContainsKey(type))
                     {
-                        var methods = DObject.strongFunctions[type];
+                        var methods = StrongTypeRegistry.strongFunctions[type];
                         var method = methods[name];
 
                         if(method != null)

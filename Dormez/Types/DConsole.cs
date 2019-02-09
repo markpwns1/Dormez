@@ -7,7 +7,7 @@ namespace Dormez.Types
     [Static("console")]
     public class DConsole : DObject
     {
-        [Member("Title")]
+        [Member("title")]
         public DString Title
         {
             get { return Console.Title.ToDString(); }

@@ -62,18 +62,18 @@ namespace Dormez.Evaluation
                 }
             }
 
-            foreach (var c in classes)
+            foreach (var type in classes)
             {
-                var staticAttrib = c.GetCustomAttribute<StaticAttribute>();
-                var publicAttrib = c.GetCustomAttribute<StrongTemplateAttribute>();
+                var staticAttrib = type.GetCustomAttribute<StaticAttribute>();
+                var publicAttrib = type.GetCustomAttribute<StrongTemplateAttribute>();
 
                 if (staticAttrib != null)
                 {
-                    heap.DeclareGlobalVariable(staticAttrib.name, (DObject)Activator.CreateInstance(c));
+                    heap.DeclareGlobalVariable(staticAttrib.name, StrongTypeRegistry.Instantiate(type, null));
                 }
                 else if(publicAttrib != null)
                 {
-                    heap.DeclareGlobalVariable(publicAttrib.name, new DStrongTemplate(c));
+                    heap.DeclareGlobalVariable(publicAttrib.name, new DStrongTemplate(type));
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using Dormez.Memory;
 using Dormez.Templates;
@@ -17,8 +18,6 @@ namespace Dormez.Types
 {
     public class DObject
     {
-        public static Dictionary<Type, Dictionary<string, MethodInfo>> strongFunctions = new Dictionary<Type, Dictionary<string, MethodInfo>>();
-        public static Dictionary<string, Type> strongTemplates = new Dictionary<string, Type>();
 
         public Dictionary<string, Member> members = new Dictionary<string, Member>();
         
@@ -26,58 +25,20 @@ namespace Dormez.Types
         {
             Type type = GetType();
             
-            if (!strongFunctions.ContainsKey(type))
+            if (!StrongTypeRegistry.strongFunctions.ContainsKey(type))
             {
-                Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
-
-                foreach (var method in type.GetMethods())
-                {
-                    var memberAttrib = method.GetCustomAttribute<MemberAttribute>();
-
-                    if (memberAttrib == null)
-                    {
-                        continue;
-                    }
-                    
-                    methods.Add(memberAttrib.callableName, method);
-                }
-
-                foreach(var property in type.GetProperties())
-                {
-                    var memberAttrib = property.GetCustomAttribute<MemberAttribute>();
-
-                    if(memberAttrib == null)
-                    {
-                        continue;
-                    }
-
-                    var accessors = property.GetAccessors();
-
-                    foreach (var accessor in accessors)
-                    {
-                        string callableName;
-
-                        if(accessor.Name.StartsWith("get_"))
-                        {
-                            callableName = "get" + memberAttrib.callableName;
-                        }
-                        else if(accessor.Name.StartsWith("set_"))
-                        {
-                            callableName = "set" + memberAttrib.callableName;
-                        }
-                        else
-                        {
-                            throw new Exception("Accessor is not an accessor?");
-                        }
-
-                        methods.Add(callableName, accessor);
-                    }
-                }
-
-                strongFunctions.Add(type, methods);
+                StrongTypeRegistry.RegisterFunctions(type);
+                StrongTypeRegistry.RegisterProperties(type);
             }
 
-            
+            var t = GetType();
+            if (StrongTypeRegistry.strongProperties.ContainsKey(t))
+            {
+                StrongTypeRegistry.strongProperties[t].ToList().ForEach(x => {
+                    x.Value.owner = this;
+                    this.members.Add(x.Key, x.Value);
+                });
+            }
         }
 
         public bool MemberExists(string name)
