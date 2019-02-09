@@ -25,14 +25,14 @@ namespace Dormez.Templates
 
             if (super != null)
             {
-                instance.members.Add("base", new ReadOnlyMember(super.Instantiate(null, false)));
+                instance.AddMember("base", new ReadOnlyMember(super.Instantiate(null, false)));
             }
 
             i.Goto(continueAt);
             
-            if (initialize && instance.MemberExists("constructor"))
+            if (initialize && instance.HasMember("constructor"))
             {
-                instance.GetFunction("constructor").Call(inputs);
+                instance.CallFunction("constructor", inputs);
             }
 
             return instance;

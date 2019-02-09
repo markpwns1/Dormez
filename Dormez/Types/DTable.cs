@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Dormez.Functions;
 using Dormez.Memory;
 
@@ -6,16 +7,16 @@ namespace Dormez.Types
 {
     public class DTable : DObject
     {
-        public DWeakFunction GetFunction(string name)
+        public void SetMembers(Dictionary<string, Member> members)
         {
-            return AssertType<DWeakFunction>(members[name].Value);
+            this.members = members;
         }
-        
+
         public override DObject OpPOW(DObject other)
         {
-            if (MemberExists("exponent"))
+            if (HasMember("exponent"))
             {
-                return AssertType<DBool>(GetFunction("exponent").CLRCall(other));
+                return AssertType<DBool>(CLRCallFunction("exponent", other));
             }
 
             return base.OpPOW(other);
@@ -23,9 +24,9 @@ namespace Dormez.Types
 
         public override DObject OpMOD(DObject other)
         {
-            if (MemberExists("mod"))
+            if (HasMember("mod"))
             {
-                return AssertType<DBool>(GetFunction("mod").CLRCall(other));
+                return AssertType<DBool>(CLRCallFunction("mod", other));
             }
 
             return base.OpMOD(other);
@@ -33,9 +34,9 @@ namespace Dormez.Types
 
         public override DBool OpLS(DObject other)
         {
-            if (MemberExists("lessThan"))
+            if (HasMember("lessThan"))
             {
-                return AssertType<DBool>(GetFunction("lessThan").CLRCall(other));
+                return AssertType<DBool>(CLRCallFunction("lessThan", other));
             }
 
             return base.OpLS(other);
@@ -43,9 +44,9 @@ namespace Dormez.Types
 
         public override DBool OpNEQ(DObject other)
         {
-            if (MemberExists("notEquals"))
+            if (HasMember("notEquals"))
             {
-                return AssertType<DBool>(GetFunction("notEquals").CLRCall(other));
+                return AssertType<DBool>(CLRCallFunction("notEquals", other));
             }
 
             return base.OpNEQ(other);
@@ -53,9 +54,9 @@ namespace Dormez.Types
 
         public override DBool OpGR(DObject other)
         {
-            if (MemberExists("greaterThan"))
+            if (HasMember("greaterThan"))
             {
-                return AssertType<DBool>(GetFunction("greaterThan").CLRCall(other));
+                return AssertType<DBool>(CLRCallFunction("greaterThan", other));
             }
 
             return base.OpGR(other);
@@ -68,9 +69,9 @@ namespace Dormez.Types
 
         public override DBool OpEQ(DObject other)
         {
-            if (MemberExists("equals"))
+            if (HasMember("equals"))
             {
-                return AssertType<DBool>(GetFunction("equals").CLRCall(other));
+                return AssertType<DBool>(CLRCallFunction("equals", other));
             }
 
             return base.OpEQ(other);
@@ -78,9 +79,9 @@ namespace Dormez.Types
 
         public override DObject OpNEG()
         {
-            if (MemberExists("negate"))
+            if (HasMember("negate"))
             {
-                return GetFunction("negate").CLRCall();
+                return CLRCallFunction("negate");
             }
 
             return base.OpNEG();
@@ -88,9 +89,9 @@ namespace Dormez.Types
 
         public override DObject OpDIV(DObject other)
         {
-            if (MemberExists("divide"))
+            if (HasMember("divide"))
             {
-                return GetFunction("divide").CLRCall(other);
+                return CLRCallFunction("divide", other);
             }
 
             return base.OpDIV(other);
@@ -98,9 +99,9 @@ namespace Dormez.Types
 
         public override DObject OpMUL(DObject other)
         {
-            if (MemberExists("multiply"))
+            if (HasMember("multiply"))
             {
-                return GetFunction("multiply").CLRCall(other);
+                return CLRCallFunction("multiply", other);
             }
 
             return base.OpMUL(other);
@@ -108,9 +109,9 @@ namespace Dormez.Types
 
         public override DObject OpSUB(DObject other)
         {
-            if (MemberExists("sub"))
+            if (HasMember("sub"))
             {
-                return GetFunction("sub").CLRCall(other);
+                return CLRCallFunction("sub", other);
             }
 
             return base.OpSUB(other);
@@ -118,9 +119,9 @@ namespace Dormez.Types
 
         public override DObject OpADD(DObject other)
         {
-            if(MemberExists("add"))
+            if(HasMember("add"))
             {
-                return GetFunction("add").CLRCall(other);
+                return CLRCallFunction("add", other);
             }
 
             return base.OpADD(other);
@@ -128,9 +129,9 @@ namespace Dormez.Types
 
         public override string ToString()
         {
-            if (MemberExists("toString"))
+            if (HasMember("toString"))
             {
-                return GetFunction("toString").CLRCall().ToString();
+                return CLRCallFunction("toString").ToString();
             }
 
             return "table";

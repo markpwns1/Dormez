@@ -79,17 +79,7 @@ namespace Dormez.Templates
 
         public static DObject Instantiate(Type t, DObject[] parameters)
         {
-            DObject instance = (DObject)Activator.CreateInstance(t, parameters);
-
-            /*if(strongProperties.ContainsKey(t))
-            {
-                strongProperties[t].ToList().ForEach(x => {
-                    x.Value.owner = instance;
-                    instance.members.Add(x.Key, x.Value);
-                    });
-            }*/
-
-            return instance;
+            return (DObject)Activator.CreateInstance(t, parameters);
         }
 
         public static DObject ToDormezType(object obj)

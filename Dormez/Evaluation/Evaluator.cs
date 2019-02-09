@@ -64,8 +64,8 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    lastVariable = i.functionOwners.Peek().members["base"];
-                    return i.functionOwners.Peek().members["base"].Value;
+                    lastVariable = i.functionOwners.Peek().GetMember("base");
+                    return lastVariable.Value;
                 }
             };
 
@@ -155,7 +155,7 @@ namespace Dormez.Evaluation
 
                     }
 
-                    table.members = members;
+                    table.SetMembers(members);
 
                     i.UnsafeEat("r curly");
 
@@ -513,9 +513,9 @@ namespace Dormez.Evaluation
                     var name = i.GetIdentifier();
                     var type = left.GetType();
 
-                    if (left.MemberExists(name))
+                    if (left.HasMember(name))
                     {
-                        lastVariable = left.members[name];
+                        lastVariable = left.GetMember(name);
                         return lastVariable.Value;
                     }
                     else if(StrongTypeRegistry.strongFunctions.ContainsKey(type))
@@ -529,10 +529,10 @@ namespace Dormez.Evaluation
                             return new DStrongFunction(method, left);
                         }
                     }
-                    else if (left.MemberExists("base"))
+                    else if (left.HasMember("base"))
                     {
                         i.pointer -= 2; // recurse back to the dot, with base being the new left side
-                        return left.members["base"].Value;
+                        return left.GetMemberValue("base");
                     }
 
                     throw new InterpreterException(i.CurrentToken, "Object (" + type.Name + ") does not contain member: " + name);

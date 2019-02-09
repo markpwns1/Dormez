@@ -16,36 +16,8 @@ NOTES:
 
 namespace Dormez.Types
 {
-    public class DObject
+    public partial class DObject
     {
-
-        public Dictionary<string, Member> members = new Dictionary<string, Member>();
-        
-        public DObject()
-        {
-            Type type = GetType();
-            
-            if (!StrongTypeRegistry.strongFunctions.ContainsKey(type))
-            {
-                StrongTypeRegistry.RegisterFunctions(type);
-                StrongTypeRegistry.RegisterProperties(type);
-            }
-
-            var t = GetType();
-            if (StrongTypeRegistry.strongProperties.ContainsKey(t))
-            {
-                StrongTypeRegistry.strongProperties[t].ToList().ForEach(x => {
-                    x.Value.owner = this;
-                    this.members.Add(x.Key, x.Value);
-                });
-            }
-        }
-
-        public bool MemberExists(string name)
-        {
-            return members.ContainsKey(name);
-        }
-
         protected Exception OpException(Type leftSide)
         {
             var st = new StackTrace();
