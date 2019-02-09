@@ -176,7 +176,7 @@ Tables also act like classes, which means the `this` keyword is available inside
         y = 2,
         
         magnitude = function {
-            return (this.x ^ 2 + this.y ^ 2).sqrt()
+            return math.sqrt(this.x ^ 2 + this.y ^ 2);
         }
     }
     
