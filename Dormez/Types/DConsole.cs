@@ -38,6 +38,13 @@ namespace Dormez.Types
             return Console.ReadKey().KeyChar.ToDChar();
         }
 
+        [Member("waitForKey")]
+        public char WaitForKey()
+        {
+            Console.Write("Press any key to continue. ");
+            return Console.ReadKey().KeyChar;
+        } 
+
         public override string ToString()
         {
             return "console";

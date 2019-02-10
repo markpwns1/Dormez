@@ -33,7 +33,9 @@ namespace Dormez
             { "each", "each" },
             { "in", "in" },
             { "by", "by" },
-            { "of", "of" },
+            { "get", "get" },
+            { "set", "set" },
+            //{ "of", "of" },
             { "return", "return" },
             { "table", "table" },
             { "template", "structure" },
@@ -42,6 +44,7 @@ namespace Dormez
             { "extending", "extending" },
             { "base", "base" },
             { "include", "include" },
+            { "constructor", "constructor" },
 
             { "if", "if" },
             { "else", "else" },
@@ -101,7 +104,7 @@ namespace Dormez
 
             { ".", "dot" },
             { ",", "comma" },
-            { ":", "colon" },
+            { ":", "of" },
             { ";", "semicolon" },
         };
 
@@ -164,6 +167,26 @@ namespace Dormez
                 return new Token(EOF_CODE, CurrentLocation);
             }
 
+            // If letter
+            if (char.IsLetter(CurrentChar) || CurrentChar == '_')
+            {
+                var loc = CurrentLocation;
+                var ident = GetIdentifier();
+
+                if (keywords.ContainsKey(ident))
+                {
+                    return new Token(keywords[ident], loc);
+                }
+                else if (specialKeywords.ContainsKey(ident))
+                {
+                    return specialKeywords[ident];
+                }
+                else
+                {
+                    return new Token(IDENTIFIER_CODE, loc, ident);
+                }
+            }
+
             // If symbol
             if (IsSymbol(CurrentChar))
             {
@@ -221,25 +244,7 @@ namespace Dormez
                 return new Token(NUMBER_CODE, CurrentLocation, GetNumber());
             }
 
-            // If letter
-            if (char.IsLetter(CurrentChar))
-            {
-                var loc = CurrentLocation;
-                var ident = GetIdentifier();
-
-                if (keywords.ContainsKey(ident))
-                {
-                    return new Token(keywords[ident], loc);
-                }
-                else if(specialKeywords.ContainsKey(ident))
-                {
-                    return specialKeywords[ident];
-                }
-                else
-                {
-                    return new Token(IDENTIFIER_CODE, loc, ident);
-                }
-            }
+            
 
             throw new LexerException(CurrentLocation, "Unrecognized character: " + CurrentChar);
         }

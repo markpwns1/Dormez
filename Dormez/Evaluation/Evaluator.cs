@@ -14,7 +14,7 @@ namespace Dormez.Evaluation
 
         public List<List<Operation>> precedences = new List<List<Operation>>();
 
-        private Member lastVariable = null;
+        public Member lastVariable = null;
 
         private DVoid dvoid = DVoid.instance;
 
@@ -118,6 +118,31 @@ namespace Dormez.Evaluation
                 }
             };
 
+            var funcLiteral = new Operation("function")
+            {
+                association = Operation.Association.None,
+                unaryFunction = (none) =>
+                {
+                    i.TryEat("of");
+                    var location = i.GetLocation();
+
+                    DWeakFunction func = new DWeakFunction()
+                    {
+                        i = i,
+                        location = location
+                    };
+
+                    while (i.CurrentToken != "l curly")
+                    {
+                        i.Eat();
+                    }
+
+                    i.SkipBlock();
+
+                    return func;
+                }
+            };
+
             var tableLiteral = new Operation("table")
             {
                 association = Operation.Association.None,
@@ -128,32 +153,79 @@ namespace Dormez.Evaluation
                     var table = new DTable();
                     
                     var members = new Dictionary<string, Member>();
+                    var properties = new Dictionary<string, WeakProperty>();
                     
                     while (i.CurrentToken != "r curly")
                     {
+                        if(i.CurrentToken == "get")
+                        {
+                            i.Eat();
+                            string name = i.GetIdentifier();
+                            DWeakFunction getter = (DWeakFunction)funcLiteral.unaryFunction.Invoke(null);
+                            getter.owner = table;
+                            properties.Add(name, new WeakProperty(getter));
+                        }
+                        else if (i.CurrentToken == "set")
+                        {
+                            i.Eat();
+                            string name = i.GetIdentifier();
+
+                            if(!properties.ContainsKey(name))
+                            {
+                                throw i.Exception("Must declare a getter for " + name + " before declaring a setter.");
+                            }
+
+                            DWeakFunction setter = (DWeakFunction)funcLiteral.unaryFunction.Invoke(null);
+                            setter.owner = table;
+
+                            properties[name].setter = setter;
+                        }
+                        else if(i.CurrentToken == "var")
+                        {
+                            i.Eat();
                             string name = i.GetIdentifier();
                             DObject value = new DUndefined();
 
-                            if(i.CurrentToken == "equals")
+                            if (i.CurrentToken == "equals")
                             {
                                 i.Eat();
                                 value = Evaluate();
 
-                                if(value.GetType() == typeof(DWeakFunction))
+                                if (value.GetType() == typeof(DWeakFunction))
                                 {
                                     ((DWeakFunction)value).owner = table;
                                 }
                             }
 
                             members.Add(name, new Member(value));
+                        }
+                        else if(i.CurrentToken == "constructor")
+                        {
+                            i.Eat();
+                            DWeakFunction ctor = (DWeakFunction)funcLiteral.unaryFunction.Invoke(null);
+                            ctor.owner = table;
 
-                            if(i.CurrentToken == "comma")
-                            {
-                                i.Eat();
-                                continue;
-                            }
+                            members.Add("constructor", new ReadOnlyMember(ctor));
+                        }
+                        else if(i.CurrentToken == "function")
+                        {
+                            i.Eat();
+                            string name = i.GetIdentifier();
 
+                            DWeakFunction ctor = (DWeakFunction)funcLiteral.unaryFunction.Invoke(null);
+                            ctor.owner = table;
+
+                            members.Add(name, new Member(ctor));
+                        }
+                        else
+                        {
+                            throw i.Exception("Unexpected token: " + i.CurrentToken.Type);
+                        }
+
+                        i.TryEat("semicolon");
                     }
+
+                    properties.ToList().ForEach(x => members.Add(x.Key, x.Value));
 
                     table.SetMembers(members);
 
@@ -172,30 +244,6 @@ namespace Dormez.Evaluation
                 {
                     i.returnValue = Evaluate();
                     return dvoid;
-                }
-            };
-
-            var funcLiteral = new Operation("function")
-            {
-                association = Operation.Association.None,
-                unaryFunction = (none) =>
-                {
-                    i.TryEat("of");
-                    var location = i.GetLocation();
-
-                    DWeakFunction func = new DWeakFunction()
-                    {
-                        i = i,
-                        location = location
-                    };
-
-                    while(i.CurrentToken != "l curly")
-                    {
-                        i.Eat();
-                    }
-
-                    i.SkipBlock();
-                    return func;
                 }
             };
 
@@ -461,17 +509,34 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    string name = i.Eat<string>("identifier");
-                    DObject value = DUndefined.instance;
-
-                    if (i.CurrentToken == "equals")
+                    if(i.CurrentToken == "structure")
                     {
                         i.Eat();
-                        value = Evaluate();
+                        string name = i.GetIdentifier();
+                        DWeakTemplate value = (DWeakTemplate)structureLiteral.unaryFunction(null);
+                        i.heap.DeclareLocal(name, value);
                     }
+                    else if(i.CurrentToken == "function")
+                    {
+                        i.Eat();
+                        string name = i.GetIdentifier();
+                        DWeakFunction value = (DWeakFunction)funcLiteral.unaryFunction(null);
+                        i.heap.DeclareLocal(name, value);
+                    }
+                    else
+                    {
+                        string name = i.Eat<string>("identifier");
+                        DObject value = DUndefined.instance;
 
-                    i.heap.DeclareLocal(name, value);
+                        if (i.CurrentToken == "equals")
+                        {
+                            i.Eat();
+                            value = Evaluate();
+                        }
 
+                        i.heap.DeclareLocal(name, value);
+                    }
+                    
                     return dvoid;
                 }
             };
@@ -501,6 +566,11 @@ namespace Dormez.Evaluation
 
                     lastVariable = i.heap.Get(name);
                     
+                    if(i.CurrentToken == "equals")
+                    {
+                        return DUndefined.instance;
+                    }
+
                     return lastVariable.Value;
                 }
             };
@@ -516,6 +586,12 @@ namespace Dormez.Evaluation
                     if (left.HasMember(name))
                     {
                         lastVariable = left.GetMember(name);
+
+                        if (i.CurrentToken == "equals")
+                        {
+                            return DUndefined.instance;
+                        }
+                        
                         return lastVariable.Value;
                     }
                     else if(StrongTypeRegistry.strongFunctions.ContainsKey(type))
@@ -849,8 +925,7 @@ namespace Dormez.Evaluation
                 if (ateOperator)
                     i.pointer--;
             }
-
-            //while (i.CurrentToken.Type == operation.operatorToken)
+            
             while(operations.Exists(x => x.operatorToken == i.CurrentToken.Type))
             {
                 var operation = operations.Find(x => x.operatorToken == i.CurrentToken.Type);
@@ -881,8 +956,7 @@ namespace Dormez.Evaluation
                         InvalidateOperation(operation.eatOperator, operation);
                         continue;
                     }
-                    //Console.WriteLine("VAR: " + lastVariable);
-                    //Console.WriteLine("RESULT: " + result);
+
                     result = operation.unaryFunction.Invoke(result);
                 }
                 else if (operation.association == Operation.Association.None)
