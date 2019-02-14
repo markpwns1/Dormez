@@ -188,6 +188,10 @@ namespace Dormez.Evaluation
             };
         }
         
+        /// <summary>
+        /// Gets parameters. Does not eat [l bracket] but eats [r bracket]
+        /// </summary>
+        /// <returns></returns>
         public DObject[] GetParameters()
         {
             List<DObject> p = new List<DObject>();

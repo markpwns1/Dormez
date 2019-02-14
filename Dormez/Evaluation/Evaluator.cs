@@ -64,7 +64,16 @@ namespace Dormez.Evaluation
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
-                    lastVariable = i.functionOwners.Peek().GetMember("base");
+                    var super = i.functionOwners.Peek().GetMember("base");
+
+                    lastVariable = super;
+
+                    if(i.CurrentToken == "l bracket")
+                    {
+                        i.Eat();
+                        var p = i.GetParameters();
+                        ((DFunction)super.Value.GetMemberValue("constructor")).Call(p);
+                    }
                     return lastVariable.Value;
                 }
             };
@@ -514,6 +523,13 @@ namespace Dormez.Evaluation
                         i.Eat();
                         string name = i.GetIdentifier();
                         DWeakTemplate value = (DWeakTemplate)structureLiteral.unaryFunction(null);
+                        i.heap.DeclareLocal(name, value);
+                    }
+                    else if(i.CurrentToken == "table")
+                    {
+                        i.Eat();
+                        string name = i.GetIdentifier();
+                        DTable value = (DTable)tableLiteral.unaryFunction(null);
                         i.heap.DeclareLocal(name, value);
                     }
                     else if(i.CurrentToken == "function")
