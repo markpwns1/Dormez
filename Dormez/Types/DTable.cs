@@ -11,7 +11,6 @@ namespace Dormez.Types
         {
             this.members = members;
         }
-
         public override DObject OpPOW(DObject other)
         {
             if (HasMember("exponent"))
@@ -64,7 +63,8 @@ namespace Dormez.Types
 
         public override Member OpINDEX(DObject other)
         {
-            throw new Exception("A table cannot be indexed. Instead, make getter and setter methods.");
+            return GetMember(other.ToString());
+            //throw new Exception("A table cannot be indexed. Instead, make getter and setter methods.");
         }
 
         public override DBool OpEQ(DObject other)
