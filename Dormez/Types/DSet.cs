@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Dormez.Functions;
 using Dormez.Memory;
 using Dormez.Templates;
 
@@ -54,6 +55,28 @@ namespace Dormez.Types
 
         [Member("length")]
         public int Length => items.Count;
+
+        [Member("forEach")]
+        public void ForEach(DFunction func)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                func.Call(new DObject[] { i.ToDNumber(), items[i].Value });
+            }
+        }
+
+        [Member("map")]
+        public DSet Map(DFunction func)
+        {
+            DSet newSet = new DSet(new DObject[0]);
+
+            foreach (var item in items)
+            {
+                newSet.Add(func.Call(new DObject[] { item.Value }));
+            }
+
+            return newSet;
+        }
 
         public override bool Equals(object obj)
         {

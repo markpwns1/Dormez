@@ -591,6 +591,26 @@ namespace Dormez.Evaluation
                 }
             };
 
+            var conditional = new Operation("question mark")
+            {
+                association = Operation.Association.Left,
+                unaryFunction = (left) =>
+                {
+                    var ifTrue = Evaluate();
+                    i.Eat("else");
+                    var ifFalse = Evaluate();
+
+                    if (DObject.AssertType<DBool>(left).ToBool())
+                    {
+                        return ifTrue;
+                    }
+                    else
+                    {
+                        return ifFalse;
+                    }
+                }
+            };
+
             var traverse = new Operation("dot")
             {
                 association = Operation.Association.Left,
@@ -818,7 +838,14 @@ namespace Dormez.Evaluation
 
             var or = new Operation("or")
             {
-                binaryFunction = (left, right) => DObject.AssertType<DBool>(left).OpOR(DObject.AssertType<DBool>(right))
+                binaryFunction = (left, right) => {
+                    if(left.Equals(DUndefined.instance))
+                    {
+                        return right;
+                    }
+
+                    return DObject.AssertType<DBool>(left).OpOR(DObject.AssertType<DBool>(right));
+                }
             };
 
             //operations.Add(eof);
@@ -828,8 +855,12 @@ namespace Dormez.Evaluation
                 precedences.Last().Add(op);
             }
 
-            
-            precedences.Add(new List<Operation>());
+            void precedence()
+            {
+                precedences.Add(new List<Operation>());
+            }
+
+            precedence();
             register(thisLiteral);
             register(baseLiteral);
             register(bracket);
@@ -841,13 +872,13 @@ namespace Dormez.Evaluation
             register(tableLiteral);
             register(charLiteral);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(identifier);
             register(methodCall);
             register(traverse);
             register(index);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(assignment);
             register(preInc);
             register(postInc);
@@ -855,23 +886,23 @@ namespace Dormez.Evaluation
             register(preDec);
             register(postDec);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(neg);
             register(not);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(pow);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(mul);
             register(div);
             register(mod);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(add);
             register(sub);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(eq);
             register(neq);
             register(gr);
@@ -879,13 +910,16 @@ namespace Dormez.Evaluation
             register(geq);
             register(leq);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(and);
 
-            precedences.Add(new List<Operation>());
+            precedence();
             register(or);
 
-            precedences.Add(new List<Operation>());
+            precedence();
+            register(conditional);
+
+            precedence();
             register(semicolon);
             register(declaration);
             register(closeBracket);

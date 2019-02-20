@@ -106,6 +106,8 @@ namespace Dormez
             { ",", "comma" },
             { ":", "of" },
             { ";", "semicolon" },
+
+            { "?", "question mark" },
         };
 
         private static string inputText;
