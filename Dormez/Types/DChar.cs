@@ -8,7 +8,12 @@
         {
             value = v;
         }
-        
+
+        public override bool Equals(object obj)
+        {
+            return obj.ToString() == value.ToString();
+        }
+
         public override string ToString()
         {
             return value.ToString();

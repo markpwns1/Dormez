@@ -26,11 +26,34 @@ namespace Dormez.Types
             return items[index.ToInt()].Value = value;
         }
 
-        [Member("length")]
-        public int Length
+        [Member("add")]
+        public void Add(DObject value)
         {
-            get { return items.Count; }
+            items.Add(new Member(value));
         }
+
+        [Member("remove")]
+        public void Remove(DObject value)
+        {
+            Member m = null;
+            foreach (var item in items)
+            {
+                if (item.Value.Equals(value))
+                {
+                    m = item;
+                    break;
+                }
+            }
+
+            if(m != null)
+                items.Remove(m);
+        }
+
+        [Member("removeAt")]
+        public void Remove(DNumber index) => items.RemoveAt(index.ToInt());
+
+        [Member("length")]
+        public int Length => items.Count;
 
         public override bool Equals(object obj)
         {
