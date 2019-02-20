@@ -843,8 +843,14 @@ namespace Dormez.Evaluation
                     {
                         return right;
                     }
+                    else if(left.GetType() == typeof(DBool) && right.GetType() == typeof(DBool))
+                    {
+                        return ((DBool)left).OpOR((DBool)right);
+                    }
 
-                    return DObject.AssertType<DBool>(left).OpOR(DObject.AssertType<DBool>(right));
+                    return left;
+
+                    //return DObject.AssertType<DBool>(left).OpOR(DObject.AssertType<DBool>(right));
                 }
             };
 
