@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Dormez.Evaluation;
 
 namespace Dormez
 {
@@ -57,7 +58,8 @@ namespace Dormez
             { "catch", "catch" },
             { "not", "not" },
             { "and", "and" },
-            { "or", "or" }
+            { "or", "or" },
+            { "throw", "throw" }
         };
 
         // When found, will return specific token
@@ -217,7 +219,7 @@ namespace Dormez
                     }
                     else
                     {
-                        throw new LexerException(CurrentLocation, "Expected '" + CHAR_END + "' to end character");
+                        throw new InterpreterException(CurrentLocation, "Expected '" + CHAR_END + "' to end character");
                     }
 
                     return new Token(CHAR_CODE, loc, c);
@@ -248,7 +250,7 @@ namespace Dormez
 
             
 
-            throw new LexerException(CurrentLocation, "Unrecognized character: " + CurrentChar);
+            throw new InterpreterException(CurrentLocation, "Unrecognized character: " + CurrentChar);
         }
 
         private static char Eat()
@@ -281,7 +283,7 @@ namespace Dormez
             }
             else
             {
-                throw new LexerException(CurrentLocation, "Expected character '" + expected + "'");
+                throw new InterpreterException(CurrentLocation, "Expected character '" + expected + "'");
             }
         }
 
@@ -479,7 +481,7 @@ namespace Dormez
                 }
             }
 
-            throw new LexerException(location, "Unrecognized symbol combination (" + symbolCollection + ")");
+            throw new InterpreterException(location, "Unrecognized symbol combination (" + symbolCollection + ")");
         }
 
     }

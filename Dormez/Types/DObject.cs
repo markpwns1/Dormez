@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Dormez.Evaluation;
 using Dormez.Memory;
 using Dormez.Templates;
 
@@ -18,20 +19,20 @@ namespace Dormez.Types
 {
     public partial class DObject
     {
-        protected Exception OpException(Type leftSide)
+        protected InterpreterException OpException(Type leftSide)
         {
             var st = new StackTrace();
             var sf = st.GetFrame(1);
 
-            return new Exception("Operator " + sf.GetMethod().Name + " cannot be used with type " + leftSide.Name);
+            return Interpreter.current.Exception("Operator " + sf.GetMethod().Name + " cannot be used with type " + leftSide.Name);
         }
 
-        protected Exception OpException(Type leftSide, Type rightSide)
+        protected InterpreterException OpException(Type leftSide, Type rightSide)
         {
             var st = new StackTrace();
             var sf = st.GetFrame(1);
 
-            return new Exception("Operator " + sf.GetMethod().Name + " cannot be used with between the types " + leftSide.Name + " and " + rightSide.Name);
+            return Interpreter.current.Exception("Operator " + sf.GetMethod().Name + " cannot be used with between the types " + leftSide.Name + " and " + rightSide.Name);
         }
 
         public static T AssertType<T>(object obj)
@@ -44,11 +45,11 @@ namespace Dormez.Types
             {
                 if(obj == null)
                 {
-                    throw new Exception("Expected type " + typeof(T).Name + ", got null");
+                    throw Interpreter.current.Exception("Expected type " + typeof(T).Name + ", got null");
                 }
                 else
                 {
-                    throw new Exception("Expected type " + typeof(T).Name + ", got type " + obj.GetType().Name);
+                    throw Interpreter.current.Exception("Expected type " + typeof(T).Name + ", got type " + obj.GetType().Name);
                 }
             }
         }
@@ -123,7 +124,7 @@ namespace Dormez.Types
 
         public virtual Member OpINDEX(DObject other)
         {
-            throw new Exception("Type " + GetType() + " cannot be indexed");
+            throw Interpreter.current.Exception("Type " + GetType() + " cannot be indexed");
         }
 
         [Member("getType")]
@@ -141,7 +142,7 @@ namespace Dormez.Types
         [Member("clone")]
         public virtual DObject Clone()
         {
-            throw new Exception("Cannot clone type: " + GetType().Name);
+            throw Interpreter.current.Exception("Cannot clone type: " + GetType().Name);
         }
     }
 

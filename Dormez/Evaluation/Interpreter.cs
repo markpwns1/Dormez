@@ -291,6 +291,9 @@ namespace Dormez.Evaluation
             return v;
         }
 
+        /// <summary>
+        /// Executes block, should be called BEFORE l curly
+        /// </summary>
         public void ExecuteBlock()
         {
             int originalDepth = depth;
@@ -323,9 +326,25 @@ namespace Dormez.Evaluation
             }
         }
 
+        public void SkipToDepth(int depth)
+        {
+            while (this.depth > depth)
+            {
+                Eat();
+            }
+        }
+
         public void BeginLoop(InterpreterLocation beginning)
         {
             loopLocations.Push(beginning);
+        }
+
+        public void EatUntilToken(string token)
+        {
+            while(CurrentToken != token)
+            {
+                Eat();
+            }
         }
 
         public void EndLoop()

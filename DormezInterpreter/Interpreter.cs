@@ -46,7 +46,7 @@ namespace DormezInterpreter
             }
             else
             {
-                Console.WriteLine("Proper usage: DormezInterpreter.exe <filename> <arg1> <arg2> ...");
+                Console.WriteLine("Proper usage: DormezInterpreter.exe <filename> [arg1] [arg2] ...");
                 Console.ReadKey();
                 return;
             }
@@ -54,7 +54,7 @@ namespace DormezInterpreter
             var interpreter = new Interpreter(tokens);
             var evaluator = new Evaluator(interpreter);
 
-            //try
+            try
             {
                 var argList = args.ToList();
 
@@ -66,10 +66,10 @@ namespace DormezInterpreter
 
                 interpreter.Execute();
             }
-            //catch (Exception e)
+            catch (InterpreterException e)
             {
-                //Console.WriteLine("Fatal error: " + e.Message);
-                //Console.ReadKey();
+                Console.WriteLine("FATAL ERROR @ " + e.Message);
+                Console.ReadKey();
             }
         }
     }

@@ -4,7 +4,7 @@ using Dormez.Templates;
 
 namespace Dormez.Types
 {
-    [StrongTemplate("string")]
+    [StrongTemplate("String")]
     public class DString : DObject
     {
         public string value;

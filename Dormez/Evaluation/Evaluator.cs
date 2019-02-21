@@ -25,6 +25,74 @@ namespace Dormez.Evaluation
             i = interpreter;
             interpreter.evaluator = this;
 
+            var throwStatement = new Operation("throw")
+            {
+                association = Operation.Association.Right,
+                unaryFunction = (right) =>
+                {
+                    throw i.Exception(DObject.AssertType<DException>(right).message.ToString());
+                }
+            };
+
+            var tryCatch = new Operation("try")
+            {
+                association = Operation.Association.None,
+                unaryFunction = (none) =>
+                {
+                    int depth = i.GetLocation().depth;
+
+                    try
+                    {
+                        i.ExecuteBlock();
+                        i.Eat("catch");
+                        i.EatUntilToken("l curly");
+                        i.SkipBlock();
+                    }
+                    catch (InterpreterException e)
+                    {
+                        i.SkipToDepth(depth);
+                        i.Eat("catch");
+
+                        string exceptionName = null;
+                        string lineName = null;
+                        string columnName = null;
+
+                        if(i.CurrentToken == "identifier")
+                        {
+                            exceptionName = i.GetIdentifier();
+                            i.heap.DeclareReadOnly(exceptionName, new DException(e.message.ToDString()));
+                        }
+                        
+                        if(i.CurrentToken == "comma")
+                        {
+                            i.Eat();
+                            lineName = i.GetIdentifier();
+                            i.heap.DeclareReadOnly(lineName, e.location.line.ToDNumber());
+                        }
+
+                        if (i.CurrentToken == "comma")
+                        {
+                            i.Eat();
+                            columnName = i.GetIdentifier();
+                            i.heap.DeclareReadOnly(columnName, e.location.column.ToDNumber());
+                        }
+
+                        i.ExecuteBlock();
+
+                        if(exceptionName != null)
+                            i.heap.DeleteLocal(exceptionName);
+
+                        if (lineName != null)
+                            i.heap.DeleteLocal(lineName);
+
+                        if (columnName != null)
+                            i.heap.DeleteLocal(columnName);
+                    }
+
+                    return dvoid;
+                }
+            };
+
             var include = new Operation("include")
             {
                 association = Operation.Association.None,
@@ -941,6 +1009,8 @@ namespace Dormez.Evaluation
             register(forLoop);
             register(structureLiteral);
             register(include);
+            register(tryCatch);
+            register(throwStatement);
         }
 
         public T Evaluate<T>()
@@ -1026,7 +1096,7 @@ namespace Dormez.Evaluation
                 }
                 else
                 {
-                    throw new Exception("Operator is unary but has an unassigned association");
+                    throw Interpreter.current.Exception("Operator is unary but has an unassigned association");
                 }
 
                 operations = new List<Operation>(precedences[precedence]);
