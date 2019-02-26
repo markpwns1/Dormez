@@ -320,7 +320,7 @@ namespace Dormez.Evaluation
         public void AbortLoop()
         {
             var loc = loopLocations.Peek();
-            while (depth > loc.depth)
+            while (depth > loc.depth + 1)
             {
                 Eat();
             }

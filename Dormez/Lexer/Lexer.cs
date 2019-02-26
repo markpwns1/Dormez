@@ -75,6 +75,8 @@ namespace Dormez
         {
             { "++", "increment" },
             { "--", "decrement" },
+            { "+=", "add" },
+            { "-=", "subtract" },
 
             { "!=", "not equal" },
             { "==", "double equal" },

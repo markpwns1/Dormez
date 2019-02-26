@@ -7,6 +7,9 @@ namespace Dormez.Types
     [Static("math")]
     public class DMath : DObject
     {
+        [Member("pi")]
+        public DNumber Pi { get { return Math.PI.ToDNumber(); } }
+
         [Member("abs")]
         public double Abs(DNumber n)
         {

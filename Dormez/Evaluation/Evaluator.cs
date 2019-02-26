@@ -547,6 +547,24 @@ namespace Dormez.Evaluation
                 }
             };
 
+            var incAdd = new Operation("add")
+            {
+                association = Operation.Association.Left,
+                unaryFunction = (left) =>
+                {
+                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() + Evaluate<DNumber>().ToFloat()).ToDNumber();
+                }
+            };
+
+            var incSub = new Operation("subtract")
+            {
+                association = Operation.Association.Left,
+                unaryFunction = (left) =>
+                {
+                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() - Evaluate<DNumber>().ToFloat()).ToDNumber();
+                }
+            };
+
             var postInc = new Operation("increment")
             {
                 association = Operation.Association.Left,
@@ -959,6 +977,9 @@ namespace Dormez.Evaluation
 
             register(preDec);
             register(postDec);
+
+            register(incAdd);
+            register(incSub);
 
             precedence();
             register(neg);
