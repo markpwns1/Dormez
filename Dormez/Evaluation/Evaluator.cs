@@ -663,7 +663,7 @@ namespace Dormez.Evaluation
 
                     if(!i.heap.Exists(name))
                     {
-                        throw new InterpreterException(i.CurrentToken, "Variable does not exist in this scope: " + name);
+                        throw new InterpreterException(i.PreviousToken, "Variable does not exist in this scope: " + name);
                     }
 
                     lastVariable = i.heap.Get(name);
