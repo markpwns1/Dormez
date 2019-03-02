@@ -46,6 +46,7 @@ namespace Dormez
             { "base", "base" },
             { "include", "include" },
             { "constructor", "constructor" },
+            { "new", "new" },
 
             { "if", "if" },
             { "else", "else" },

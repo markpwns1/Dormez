@@ -442,6 +442,18 @@ namespace Dormez.Evaluation
                 }
             };
 
+            var instantiation = new Operation("new")
+            {
+                association = Operation.Association.None,
+                unaryFunction = (none) =>
+                {
+                    var template = Evaluate<DTemplate>();
+                    i.Eat("l bracket");
+                    var args = i.GetParameters();
+                    return template.Instantiate(args);
+                }
+            };
+
             var whileLoop = new Operation("while")
             {
                 association = Operation.Association.None,
@@ -749,10 +761,6 @@ namespace Dormez.Evaluation
                     {
                         return ((DFunction)left).Call(parameters);
                     }
-                    else if(left is DTemplate)
-                    {
-                        return ((DTemplate)left).Instantiate(parameters);
-                    }
                     else
                     {
                         throw i.Exception("Can only invoke a function or a template");
@@ -965,6 +973,7 @@ namespace Dormez.Evaluation
             register(boolLiteral);
             register(tableLiteral);
             register(charLiteral);
+            register(instantiation);
 
             precedence();
             register(identifier);
