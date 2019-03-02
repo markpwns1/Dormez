@@ -250,7 +250,7 @@ namespace Dormez.Evaluation
             shouldContinue = false;
             int originalDepth = depth;
             Eat("l curly");
-            while (depth != originalDepth)
+            while (depth > originalDepth)
             {
                 evaluator.Evaluate();
 
@@ -321,6 +321,15 @@ namespace Dormez.Evaluation
         {
             var loc = loopLocations.Peek();
             while (depth > loc.depth + 1)
+            {
+                Eat();
+            }
+        }
+
+        public void AbortLoopProper()
+        {
+            var loc = loopLocations.Peek();
+            while (depth > loc.depth)
             {
                 Eat();
             }

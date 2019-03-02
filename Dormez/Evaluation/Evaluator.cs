@@ -519,9 +519,11 @@ namespace Dormez.Evaluation
 
             var openBracket = new Operation("l curly")
             {
+                eatOperator = false,
                 association = Operation.Association.None,
                 unaryFunction = (none) =>
                 {
+                    i.Eat();
                     return dvoid;
                 }
             };
