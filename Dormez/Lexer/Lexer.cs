@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Dormez.Evaluation;
 
 namespace Dormez
 {
@@ -33,7 +34,9 @@ namespace Dormez
             { "each", "each" },
             { "in", "in" },
             { "by", "by" },
-            { "of", "of" },
+            { "get", "get" },
+            { "set", "set" },
+            //{ "of", "of" },
             { "return", "return" },
             { "table", "table" },
             { "template", "structure" },
@@ -42,6 +45,8 @@ namespace Dormez
             { "extending", "extending" },
             { "base", "base" },
             { "include", "include" },
+            { "constructor", "constructor" },
+            { "new", "new" },
 
             { "if", "if" },
             { "else", "else" },
@@ -54,7 +59,8 @@ namespace Dormez
             { "catch", "catch" },
             { "not", "not" },
             { "and", "and" },
-            { "or", "or" }
+            { "or", "or" },
+            { "throw", "throw" }
         };
 
         // When found, will return specific token
@@ -70,6 +76,8 @@ namespace Dormez
         {
             { "++", "increment" },
             { "--", "decrement" },
+            { "+=", "add" },
+            { "-=", "subtract" },
 
             { "!=", "not equal" },
             { "==", "double equal" },
@@ -101,8 +109,10 @@ namespace Dormez
 
             { ".", "dot" },
             { ",", "comma" },
-            { ":", "colon" },
+            { ":", "of" },
             { ";", "semicolon" },
+
+            { "?", "question mark" },
         };
 
         private static string inputText;
@@ -164,6 +174,26 @@ namespace Dormez
                 return new Token(EOF_CODE, CurrentLocation);
             }
 
+            // If letter
+            if (char.IsLetter(CurrentChar) || CurrentChar == '_')
+            {
+                var loc = CurrentLocation;
+                var ident = GetIdentifier();
+
+                if (keywords.ContainsKey(ident))
+                {
+                    return new Token(keywords[ident], loc);
+                }
+                else if (specialKeywords.ContainsKey(ident))
+                {
+                    return specialKeywords[ident];
+                }
+                else
+                {
+                    return new Token(IDENTIFIER_CODE, loc, ident);
+                }
+            }
+
             // If symbol
             if (IsSymbol(CurrentChar))
             {
@@ -192,7 +222,7 @@ namespace Dormez
                     }
                     else
                     {
-                        throw new LexerException(CurrentLocation, "Expected '" + CHAR_END + "' to end character");
+                        throw new InterpreterException(CurrentLocation, "Expected '" + CHAR_END + "' to end character");
                     }
 
                     return new Token(CHAR_CODE, loc, c);
@@ -221,27 +251,9 @@ namespace Dormez
                 return new Token(NUMBER_CODE, CurrentLocation, GetNumber());
             }
 
-            // If letter
-            if (char.IsLetter(CurrentChar))
-            {
-                var loc = CurrentLocation;
-                var ident = GetIdentifier();
+            
 
-                if (keywords.ContainsKey(ident))
-                {
-                    return new Token(keywords[ident], loc);
-                }
-                else if(specialKeywords.ContainsKey(ident))
-                {
-                    return specialKeywords[ident];
-                }
-                else
-                {
-                    return new Token(IDENTIFIER_CODE, loc, ident);
-                }
-            }
-
-            throw new LexerException(CurrentLocation, "Unrecognized character: " + CurrentChar);
+            throw new InterpreterException(CurrentLocation, "Unrecognized character: " + CurrentChar);
         }
 
         private static char Eat()
@@ -274,7 +286,7 @@ namespace Dormez
             }
             else
             {
-                throw new LexerException(CurrentLocation, "Expected character '" + expected + "'");
+                throw new InterpreterException(CurrentLocation, "Expected character '" + expected + "'");
             }
         }
 
@@ -325,27 +337,6 @@ namespace Dormez
                 Eat();
             }
         }
-
-        //private static LazuritNumber GetNegativeNumber()
-        //{
-        //    string result = "-";
-
-        //    bool usedDecimal = false;
-
-        //    while (pointer < inputText.Length && (char.IsDigit(CurrentChar) || (CurrentChar == '.' && !usedDecimal && char.IsDigit(NextChar))))
-        //    {
-        //        result += CurrentChar;
-
-        //        if (CurrentChar == '.')
-        //        {
-        //            usedDecimal = true;
-        //        }
-
-        //        Eat();
-        //    }
-
-        //    return new LazuritNumber(float.Parse(result));
-        //}
 
         private static float GetNumber()
         {
@@ -400,11 +391,6 @@ namespace Dormez
         {
             while (pointer < inputText.Length && char.IsWhiteSpace(CurrentChar))
             {
-                if (CurrentChar == '\n')
-                {
-                    NewLine();
-                }
-
                 Eat();
             }
         }
@@ -420,29 +406,6 @@ namespace Dormez
         private static char NextChar
         {
             get { return inputText[pointer + 1]; }
-        }
-
-        private static string GetEquals()
-        {
-            string result = "=";
-            Eat();
-            if (CurrentChar == '=')
-            {
-                result += '=';
-                Eat();
-            }
-            return result;
-        }
-
-        private static string GetComparator(string result)
-        {
-            Eat();
-            if (CurrentChar == '=')
-            {
-                result += '=';
-                Eat();
-            }
-            return result;
         }
 
         private static void SkipSingleLineComment()
@@ -474,12 +437,7 @@ namespace Dormez
                 Eat();
             }
         }
-
-        private static int GetPosition()
-        {
-            return pointer;
-        }
-
+        
         public static bool IsSymbol(char c)
         {
             return !char.IsLetterOrDigit(c) && !char.IsWhiteSpace(c);
@@ -521,12 +479,12 @@ namespace Dormez
 
                 if (symbols.ContainsKey(trimmed))
                 {
-                    pointer += trimmed.Length;
+                    Eat(trimmed.Length);
                     return symbols[trimmed];
                 }
             }
 
-            throw new LexerException(location, "Unrecognized symbol combination (" + symbolCollection + ")");
+            throw new InterpreterException(location, "Unrecognized symbol combination (" + symbolCollection + ")");
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Dormez.Functions;
 using Dormez.Memory;
 using Dormez.Templates;
 
@@ -26,10 +27,55 @@ namespace Dormez.Types
             return items[index.ToInt()].Value = value;
         }
 
-        [Member("length")]
-        public int Length
+        [Member("add")]
+        public void Add(DObject value)
         {
-            get { return items.Count; }
+            items.Add(new Member(value));
+        }
+
+        [Member("remove")]
+        public void Remove(DObject value)
+        {
+            Member m = null;
+            foreach (var item in items)
+            {
+                if (item.Value.Equals(value))
+                {
+                    m = item;
+                    break;
+                }
+            }
+
+            if(m != null)
+                items.Remove(m);
+        }
+
+        [Member("removeAt")]
+        public void Remove(DNumber index) => items.RemoveAt(index.ToInt());
+
+        [Member("length")]
+        public int Length => items.Count;
+
+        [Member("forEach")]
+        public void ForEach(DFunction func)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                func.Call(new DObject[] { i.ToDNumber(), items[i].Value });
+            }
+        }
+
+        [Member("map")]
+        public DSet Map(DFunction func)
+        {
+            DSet newSet = new DSet(new DObject[0]);
+
+            foreach (var item in items)
+            {
+                newSet.Add(func.Call(new DObject[] { item.Value }));
+            }
+
+            return newSet;
         }
 
         public override bool Equals(object obj)

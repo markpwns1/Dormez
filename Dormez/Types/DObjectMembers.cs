@@ -54,12 +54,12 @@ namespace Dormez.Types
 
         public DObject CallFunction(string name, DObject[] parameters)
         {
-            return AssertType<DFunction>(GetMember(name)).Call(parameters);
+            return AssertType<DFunction>(GetMemberValue(name)).Call(parameters);
         }
 
         public DObject CLRCallFunction(string name, params DObject[] parameters)
         {
-            return AssertType<DFunction>(GetMember(name)).Call(parameters);
+            return AssertType<DFunction>(GetMemberValue(name)).Call(parameters);
         }
 
         public void AddMember(string name, Member m)

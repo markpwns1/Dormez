@@ -112,6 +112,10 @@ namespace Dormez.Templates
             {
                 return obj.ToString().ToDString();
             }
+            else if (obj.GetType() == typeof(char))
+            {
+                return ((char)obj).ToDChar();
+            }
             else if (typeof(IEnumerable).IsAssignableFrom(obj.GetType()))
             {
                 return new DSet((IEnumerable<DObject>)obj);

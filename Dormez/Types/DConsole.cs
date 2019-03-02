@@ -26,17 +26,24 @@ namespace Dormez.Types
             Console.Write(obj.ToString());
         }
 
-        [Member("readLine")]
+        [Member("prompt")]
         public DString ReadLine()
         {
             return Console.ReadLine().ToDString();
         }
 
-        [Member("readKey")]
+        [Member("getKey")]
         public DChar ReadKey()
         {
             return Console.ReadKey().KeyChar.ToDChar();
         }
+
+        [Member("pause")]
+        public char WaitForKey()
+        {
+            Console.Write("Press any key to continue... ");
+            return Console.ReadKey().KeyChar;
+        } 
 
         public override string ToString()
         {

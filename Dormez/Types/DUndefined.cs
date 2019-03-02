@@ -6,6 +6,9 @@
 
         public override bool Equals(object obj)
         {
+            if (obj.GetType() == typeof(DUndefined))
+                return true;
+
             return false;
         }
 

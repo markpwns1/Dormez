@@ -118,7 +118,7 @@ namespace Dormez.Evaluation
                 return Eat<T>();
             }
 
-            throw new InterpreterException(CurrentToken, "Expected " + type + " but got " + CurrentToken + " at token #" + pointer);
+            throw new InterpreterException(CurrentToken, "Expected " + type + " but got " + CurrentToken.Type);
         }
 
         public object Eat(string type)
@@ -188,6 +188,10 @@ namespace Dormez.Evaluation
             };
         }
         
+        /// <summary>
+        /// Gets parameters. Does not eat [l bracket] but eats [r bracket]
+        /// </summary>
+        /// <returns></returns>
         public DObject[] GetParameters()
         {
             List<DObject> p = new List<DObject>();
@@ -246,7 +250,7 @@ namespace Dormez.Evaluation
             shouldContinue = false;
             int originalDepth = depth;
             Eat("l curly");
-            while (depth != originalDepth)
+            while (depth > originalDepth)
             {
                 evaluator.Evaluate();
 
@@ -287,6 +291,9 @@ namespace Dormez.Evaluation
             return v;
         }
 
+        /// <summary>
+        /// Executes block, should be called BEFORE l curly
+        /// </summary>
         public void ExecuteBlock()
         {
             int originalDepth = depth;
@@ -313,7 +320,24 @@ namespace Dormez.Evaluation
         public void AbortLoop()
         {
             var loc = loopLocations.Peek();
+            while (depth > loc.depth + 1)
+            {
+                Eat();
+            }
+        }
+
+        public void AbortLoopProper()
+        {
+            var loc = loopLocations.Peek();
             while (depth > loc.depth)
+            {
+                Eat();
+            }
+        }
+
+        public void SkipToDepth(int depth)
+        {
+            while (this.depth > depth)
             {
                 Eat();
             }
@@ -322,6 +346,14 @@ namespace Dormez.Evaluation
         public void BeginLoop(InterpreterLocation beginning)
         {
             loopLocations.Push(beginning);
+        }
+
+        public void EatUntilToken(string token)
+        {
+            while(CurrentToken != token)
+            {
+                Eat();
+            }
         }
 
         public void EndLoop()
