@@ -386,7 +386,15 @@ namespace Dormez.Evaluation
                     i.Eat("to");
                     int to = Evaluate<DNumber>().ToInt();
 
-                    int increment = 1;
+                    int increment;
+                    if (from > to)
+                    {
+                        increment = -1;
+                    }
+                    else
+                    {
+                        increment = 1;
+                    }
 
                     if (i.CurrentToken == "by")
                     {
@@ -566,7 +574,7 @@ namespace Dormez.Evaluation
                 association = Operation.Association.Left,
                 unaryFunction = (left) =>
                 {
-                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() + Evaluate<DNumber>().ToFloat()).ToDNumber();
+                    return lastVariable.Value = lastVariable.Value.OpADD(Evaluate());
                 }
             };
 
@@ -575,7 +583,7 @@ namespace Dormez.Evaluation
                 association = Operation.Association.Left,
                 unaryFunction = (left) =>
                 {
-                    return lastVariable.Value = (DObject.AssertType<DNumber>(lastVariable.Value).ToFloat() - Evaluate<DNumber>().ToFloat()).ToDNumber();
+                    return lastVariable.Value = lastVariable.Value.OpSUB(Evaluate());
                 }
             };
 
