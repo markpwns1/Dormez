@@ -2,7 +2,7 @@
 Dormez is an interpreted programming language. It supports the following:
 * Primitive types (number, string, bool, etc.)
 * Non-primitive types (console, file, etc.)
-* If/else if/else statements
+* If, else if, and else statements
 * All kinds of loops
 * Functions
 * Lua-style tables
