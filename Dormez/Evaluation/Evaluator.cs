@@ -257,7 +257,7 @@ namespace Dormez.Evaluation
 
                             properties[name].setter = setter;
                         }
-                        else if(i.CurrentToken == "var")
+                        else if(i.CurrentToken == "with")
                         {
                             i.Eat();
                             string name = i.GetIdentifier();
@@ -450,6 +450,7 @@ namespace Dormez.Evaluation
                 }
             };
 
+            /*
             var instantiation = new Operation("new")
             {
                 association = Operation.Association.None,
@@ -459,6 +460,19 @@ namespace Dormez.Evaluation
                     i.Eat("l bracket");
                     var args = i.GetParameters();
                     return template.Instantiate(args);
+                }
+            };
+            */
+
+            var instantiation = new Operation("new")
+            {
+                association = Operation.Association.Right,
+                unaryFunction = (right) =>
+                {
+                    //var template = Evaluate<DTemplate>();
+                    i.Eat("l bracket");
+                    var args = i.GetParameters();
+                    return DObject.AssertType<DTemplate>(right).Instantiate(args);
                 }
             };
 
@@ -698,7 +712,7 @@ namespace Dormez.Evaluation
                     return lastVariable.Value;
                 }
             };
-
+            
             var conditional = new Operation("question mark")
             {
                 association = Operation.Association.Left,
@@ -748,6 +762,11 @@ namespace Dormez.Evaluation
                             lastVariable = null;
                             return new DStrongFunction(method, left);
                         }
+                        else if (left.HasMember("base"))
+                        {
+                            i.pointer -= 2; // recurse back to the dot, with base being the new left side
+                            return left.GetMemberValue("base");
+                        }
                     }
                     else if (left.HasMember("base"))
                     {
@@ -769,9 +788,13 @@ namespace Dormez.Evaluation
                     {
                         return ((DFunction)left).Call(parameters);
                     }
+                    else if(left is DTemplate)
+                    {
+                        return ((DTemplate)left).Instantiate(parameters);
+                    }
                     else
                     {
-                        throw i.Exception("Can only invoke a function or a template");
+                        throw i.Exception("Can only invoke a function or a template, not a " + left.GetType().Name);
                     }
                 }
             };
@@ -943,7 +966,7 @@ namespace Dormez.Evaluation
             var or = new Operation("or")
             {
                 binaryFunction = (left, right) => {
-                    if(left.Equals(DUndefined.instance))
+                    if(left is DUndefined)
                     {
                         return right;
                     }
@@ -981,7 +1004,7 @@ namespace Dormez.Evaluation
             register(boolLiteral);
             register(tableLiteral);
             register(charLiteral);
-            register(instantiation);
+            //register(instantiation);
 
             precedence();
             register(identifier);

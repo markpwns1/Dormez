@@ -12,7 +12,7 @@ namespace Dormez.Types
 {
     public partial class DObject
     {
-        protected Dictionary<string, Member> members = new Dictionary<string, Member>();
+        public Dictionary<string, Member> members = new Dictionary<string, Member>();
 
         public DObject()
         {

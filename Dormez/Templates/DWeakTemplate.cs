@@ -25,7 +25,9 @@ namespace Dormez.Templates
 
             if (super != null)
             {
-                instance.AddMember("base", new ReadOnlyMember(super.Instantiate(null, false)));
+                var @base = super.Instantiate(null, false);
+                instance.AddMember("base", new ReadOnlyMember(@base));
+                //@base.AddMember("derived", new ReadOnlyMember(@instance));
             }
 
             i.Goto(continueAt);

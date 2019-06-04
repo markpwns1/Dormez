@@ -144,6 +144,12 @@ namespace Dormez.Types
         {
             throw Interpreter.current.Exception("Cannot clone type: " + GetType().Name);
         }
+
+        [Member("getMembers")]
+        public DSet GetMembers()
+        {
+            return new DSet(members.Keys.Select(x => x.ToDString()));
+        }
     }
 
     public static class Conversions

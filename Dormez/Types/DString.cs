@@ -51,7 +51,15 @@ namespace Dormez.Types
         public int LastIndexOf(DString v) => value.LastIndexOf(v.ToString());
 
         [Member("toNumber")]
-        public int ToDNumber() => int.Parse(value);
+        public DNumber ToDNumber()
+        {
+            float dummy;
+            if(!float.TryParse(value, out dummy))
+            {
+                return null;
+            }
+            return dummy.ToDNumber();
+        }
 
         [Member("characters")]
         public DSet GetChars => new DSet(value.ToCharArray().Select(x => x.ToDChar()));
