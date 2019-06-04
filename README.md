@@ -7,3 +7,8 @@ Dormez is an interpreted programming language. It supports the following:
 * Functions
 * Lua-style tables
 * Object-oriented programming
+
+### Documentation
+Check out the wiki to learn how to use Dormez and how it differs from other languages.
+
+https://github.com/markpwns1/Dormez/wiki
