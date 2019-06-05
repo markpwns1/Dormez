@@ -30,7 +30,7 @@ namespace Dormez.Evaluation
                 association = Operation.Association.Right,
                 unaryFunction = (right) =>
                 {
-                    throw i.Exception(DObject.AssertType<DException>(right).message.ToString());
+                    throw i.Exception(right.ToString());
                 }
             };
 
@@ -57,24 +57,27 @@ namespace Dormez.Evaluation
                         string lineName = null;
                         string columnName = null;
 
-                        if(i.CurrentToken == "identifier")
+                        if (i.CurrentToken == "of")
                         {
+                            i.Eat();
+                            
                             exceptionName = i.GetIdentifier();
                             i.heap.DeclareReadOnly(exceptionName, new DException(e.message.ToDString()));
-                        }
-                        
-                        if(i.CurrentToken == "comma")
-                        {
-                            i.Eat();
-                            lineName = i.GetIdentifier();
-                            i.heap.DeclareReadOnly(lineName, e.location.line.ToDNumber());
-                        }
+                            
 
-                        if (i.CurrentToken == "comma")
-                        {
-                            i.Eat();
-                            columnName = i.GetIdentifier();
-                            i.heap.DeclareReadOnly(columnName, e.location.column.ToDNumber());
+                            if (i.CurrentToken == "comma")
+                            {
+                                i.Eat();
+                                lineName = i.GetIdentifier();
+                                i.heap.DeclareReadOnly(lineName, e.location.line.ToDNumber());
+                            }
+
+                            if (i.CurrentToken == "comma")
+                            {
+                                i.Eat();
+                                columnName = i.GetIdentifier();
+                                i.heap.DeclareReadOnly(columnName, e.location.column.ToDNumber());
+                            }
                         }
 
                         i.ExecuteBlock();
